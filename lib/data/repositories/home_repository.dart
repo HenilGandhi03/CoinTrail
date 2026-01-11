@@ -1,34 +1,3 @@
-// import '../mock/home_mock_data.dart';
-// import 'package:cointrail/data/models/category_spending_model.dart';
-// import 'package:cointrail/data/models/monthly_summary_model.dart';
-// import 'package:cointrail/data/models/transaction_model.dart';
-// import 'package:cointrail/data/models/expense_summary_model.dart';
-// import 'package:cointrail/data/models/incomeSummaryModel.dart';
-
-// class HomeRepository {
-//   String getUserName() => HomeMockData.userName;
-
-//   MonthlySummaryModel getMonthlySummary() => HomeMockData.monthlySummary;
-
-//   ExpenseSummaryModel getExpenseSummary() => HomeMockData.expenseSummary;
-
-//   IncomeSummaryModel getIncomeSummary() => HomeMockData.incomeSummary;
-
-//   List<CategorySpendingModel> getCategories() => HomeMockData.categories;
-
-//   List<TransactionModel> getRecentTransactions({int limit = 5}) {
-//     return HomeMockData.transactions.take(limit).toList();
-//   }
-
-//   void addTransaction(TransactionModel transaction) {
-//     HomeMockData.transactions.insert(0, transaction);
-//   }
-
-//   List<TransactionModel> getAllTransactions() {
-//     return List.unmodifiable(HomeMockData.transactions);
-//   }
-// }
-
 import 'dart:ui';
 
 import 'package:cointrail/data/models/category_spending_model.dart';
@@ -37,12 +6,25 @@ import 'package:cointrail/data/models/incomeSummaryModel.dart';
 import 'package:cointrail/data/models/monthly_summary_model.dart';
 import 'package:cointrail/data/models/transaction_model.dart';
 import 'package:cointrail/data/repositories/transaction_repository.dart';
+import 'package:cointrail/data/repositories/user_repository.dart';
+import 'package:cointrail/data/sources/local/settings_hive_source.dart';
+import 'package:flutter/material.dart';
 
 class HomeRepository {
   final _txRepo = TransactionRepository();
+  final _userRepo = UserRepository();
+  final _settingsRepo = SettingsHiveSource();
 
-  // ───────── User (temporary) ─────────
-  String getUserName() => 'Sarah';
+  // ───────── USER ─────────
+  Future<String> getUserName() async {
+    final user = await _userRepo.getCurrentUser();
+    debugPrint(
+      '🟢 Cached user → id: ${user?.id}, '
+      'email: ${user?.email}, '
+      'username: ${user?.username}',
+    );
+    return user?.username.isNotEmpty == true ? user!.username : 'Guest';
+  }
 
   // ───────── Transactions ─────────
   List<TransactionModel> getRecentTransactions({int limit = 5}) {
@@ -54,13 +36,21 @@ class HomeRepository {
   }
 
   // ───────── Monthly Summary ─────────
-  MonthlySummaryModel getMonthlySummary() {
-    final txs = _txRepo.getAllSorted();
+  bool _isInCurrentMonth(DateTime date) {
+    final now = DateTime.now();
+    return date.year == now.year && date.month == now.month;
+  }
+
+  Future<MonthlySummaryModel> getMonthlySummary() async {
+    final txs = _txRepo
+        .getAllSorted()
+        .where((t) => _isInCurrentMonth(t.date))
+        .toList();
+    final budget = await _settingsRepo.getBudget();
+
     final spent = txs
         .where((t) => t.type == TransactionType.expense)
         .fold<double>(0, (sum, t) => sum + t.amount);
-
-    const budget = 3500.0;
 
     return MonthlySummaryModel(
       totalSpent: spent,
@@ -73,8 +63,12 @@ class HomeRepository {
   }
 
   // ───────── Expense Summary ─────────
-  ExpenseSummaryModel getExpenseSummary() {
-    final txs = _txRepo.getAllSorted();
+  Future<ExpenseSummaryModel> getExpenseSummary() async {
+    final txs = _txRepo
+        .getAllSorted()
+        .where((t) => _isInCurrentMonth(t.date))
+        .toList();
+    final budget = await _settingsRepo.getBudget();
 
     final expenses = txs
         .where((t) => t.type == TransactionType.expense)
@@ -91,19 +85,23 @@ class HomeRepository {
         )
         .fold<double>(0, (s, t) => s + t.amount);
 
+    final progress = budget == 0 ? 0.0 : (total / budget);
+
     return ExpenseSummaryModel(
       totalExpense: total,
       today: today,
       categories: expenses.map((e) => e.category).toSet().length,
-      budget: 3500,
-      progress: total / 3500,
+      budget: budget,
+      progress: progress,
     );
   }
 
   // ───────── Income Summary ─────────
   IncomeSummaryModel getIncomeSummary() {
-    final txs = _txRepo.getAllSorted();
-
+    final txs = _txRepo
+        .getAllSorted()
+        .where((t) => _isInCurrentMonth(t.date))
+        .toList();
     final income = txs
         .where((t) => t.type == TransactionType.income)
         .fold<double>(0, (s, t) => s + t.amount);
@@ -119,7 +117,7 @@ class HomeRepository {
   // ───────── Categories (derived) ─────────
   List<CategorySpendingModel> getCategories() {
     final txs = _txRepo.getAllSorted().where(
-      (t) => t.type == TransactionType.expense,
+      (t) => t.type == TransactionType.expense && _isInCurrentMonth(t.date),
     );
 
     final Map<String, double> totals = {};
@@ -136,7 +134,7 @@ class HomeRepository {
         amount: e.value,
         percentage: grandTotal == 0
             ? 0
-            : ((e.value / grandTotal) * 100).round(),
+            : ((e.value / grandTotal) * 100).toInt(),
         color: const Color(0xFF9CA3AF),
       );
     }).toList();

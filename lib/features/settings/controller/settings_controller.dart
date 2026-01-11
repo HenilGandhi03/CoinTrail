@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:cointrail/data/models/category_model.dart';
+import 'package:cointrail/data/sources/local/settings_hive_source.dart';
 import 'package:flutter/material.dart';
 
 enum ExportType { csv, pdf }
@@ -8,7 +9,18 @@ class SettingsController extends ChangeNotifier {
   String fullName = 'Sarah Anderson';
   String imageUrl = 'https://i.pravatar.cc/300';
 
-  double monthlyBudget = 3500;
+  double monthlyBudget = 0;
+  final _settingsHive = SettingsHiveSource();
+
+  void updateBudget(String value) {
+    final parsed = double.tryParse(value.replaceAll(RegExp(r'[^0-9]'), ''));
+    if (parsed == null) return;
+
+    monthlyBudget = parsed;
+    _settingsHive.saveBudget(parsed); // 👈 SAVE
+    _autoSave();
+    notifyListeners();
+  }
 
   final nameController = TextEditingController();
   final budgetController = TextEditingController();
@@ -16,8 +28,13 @@ class SettingsController extends ChangeNotifier {
   Timer? _debounce;
 
   SettingsController() {
-    nameController.text = fullName;
+    _loadBudget();
+  }
+
+  Future<void> _loadBudget() async {
+    monthlyBudget = await _settingsHive.getBudget();
     budgetController.text = monthlyBudget.toStringAsFixed(0);
+    notifyListeners();
   }
 
   void updateName(String value) {
@@ -26,14 +43,14 @@ class SettingsController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateBudget(String value) {
-    final parsed = double.tryParse(value.replaceAll(RegExp(r'[^0-9]'), ''));
-    if (parsed == null) return;
+  // void updateBudget(String value) {
+  //   final parsed = double.tryParse(value.replaceAll(RegExp(r'[^0-9]'), ''));
+  //   if (parsed == null) return;
 
-    monthlyBudget = parsed;
-    _autoSave();
-    notifyListeners();
-  }
+  //   monthlyBudget = parsed;
+  //   _autoSave();
+  //   notifyListeners();
+  // }
 
   void _autoSave() {
     _debounce?.cancel();

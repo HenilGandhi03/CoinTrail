@@ -52,7 +52,7 @@ class BalanceCardMonthly extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(6),
             child: LinearProgressIndicator(
-              value: summary.progress,
+              value: summary.progress.clamp(0.0, 1.0),
               minHeight: 8,
               backgroundColor: colors.onPrimary.withOpacity(0.2),
               color: colors.onPrimary,
