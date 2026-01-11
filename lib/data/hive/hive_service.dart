@@ -18,4 +18,16 @@ class HiveService {
     await Hive.openBox<TransactionModel>('transactions');
     await Hive.openBox<UserModel>('user');
   }
+
+  // Add this method to your HiveService to debug
+  static void debugCategories() {
+    final box = Hive.box<CategoryModel>('categories');
+    print('Total categories: ${box.length}');
+    print('All categories: ${box.values.toList()}');
+
+    // Check if box is empty
+    if (box.isEmpty) {
+      print('Categories box is empty!');
+    }
+  }
 }

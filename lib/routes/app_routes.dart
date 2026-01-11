@@ -5,6 +5,7 @@ import 'package:cointrail/features/debug/pages/hive_logs_page.dart';
 import 'package:cointrail/features/home/controller/home_controller.dart';
 import 'package:cointrail/features/home/screens/all_transactions_page.dart';
 import 'package:cointrail/features/root/root_page.dart';
+// import 'package:cointrail/fesatures/settings/widgets/common/add_category_sheet.dart';
 import 'package:cointrail/routes/routes.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:provider/provider.dart';
@@ -21,6 +22,7 @@ class AppRoutes {
     GetPage(name: TRoutes.register, page: () => const RegisterPage()),
 
     GetPage(name: TRoutes.hiveDebugLogs, page: () => const HiveLogsPage()),
+    // GetPage(name: TRoutes.addCategory, page: () => const AddCategorySheet()),
     GetPage(
       name: TRoutes.allTransaction,
       page: () => ChangeNotifierProvider(

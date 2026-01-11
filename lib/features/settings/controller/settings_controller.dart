@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:cointrail/data/models/category_model.dart';
+import 'package:cointrail/data/sources/local/category_hive_source.dart';
 import 'package:cointrail/data/sources/local/settings_hive_source.dart';
 import 'package:flutter/material.dart';
 
@@ -29,6 +30,9 @@ class SettingsController extends ChangeNotifier {
 
   SettingsController() {
     _loadBudget();
+    _categoryHive.seedDefaultsIfEmpty(); // 👈 ADD
+
+    loadCategories();
   }
 
   Future<void> _loadBudget() async {
@@ -126,47 +130,49 @@ class SettingsController extends ChangeNotifier {
     }
   }
 
-  final List<CategoryModel> _customCategories = [
-    CategoryModel.fromUI(
-      id: 'coffee',
-      name: 'Coffee & Drinks',
-      icon: Icons.local_cafe,
-      color: Colors.orange,
-    ),
-    CategoryModel.fromUI(
-      id: 'gym',
-      name: 'Gym & Fitness',
-      icon: Icons.fitness_center,
-      color: Colors.green,
-    ),
-    CategoryModel.fromUI(
-      id: 'pets',
-      name: 'Pet Expenses',
-      icon: Icons.pets,
-      color: Colors.blue,
-    ),
-  ];
+  final _categoryHive = CategoryHiveSource();
+  List<CategoryModel> customCategories = [];
 
-  List<CategoryModel> get customCategories =>
-      List.unmodifiable(_customCategories);
-
-  void addCategory(CategoryModel category) {
-    _customCategories.add(category);
+  Future<void> loadCategories() async {
+    customCategories = await _categoryHive.getAll();
     notifyListeners();
   }
 
-  void updateCategory(CategoryModel updated) {
-    final index = _customCategories.indexWhere((c) => c.id == updated.id);
-    if (index == -1) return;
-
-    _customCategories[index] = updated;
-    notifyListeners();
+  void addCategory(CategoryModel category) async {
+    await _categoryHive.save(category);
+    await loadCategories();
   }
 
-  void deleteCategory(String id) {
-    _customCategories.removeWhere((c) => c.id == id);
-    notifyListeners();
+  void deleteCategory(String id) async {
+    await _categoryHive.delete(id);
+    await loadCategories();
   }
+
+  Future<void> updateCategory(CategoryModel updated) async {
+    await _categoryHive.save(updated); // overwrite by id
+    await loadCategories();
+  }
+
+  // List<CategoryModel> get customCategories =>
+  //     List.unmodifiable(_customCategories);
+
+  // void addCategory(CategoryModel category) {
+  //   _customCategories.add(category);
+  //   notifyListeners();
+  // }
+
+  // void updateCategory(CategoryModel updated) {
+  //   final index = _customCategories.indexWhere((c) => c.id == updated.id);
+  //   if (index == -1) return;
+
+  //   _customCategories[index] = updated;
+  //   notifyListeners();
+  // }
+
+  // void deleteCategory(String id) {
+  //   _customCategories.removeWhere((c) => c.id == id);
+  //   notifyListeners();
+  // }
 
   // =====================
   // Preferences

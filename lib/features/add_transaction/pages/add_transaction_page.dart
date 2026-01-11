@@ -2,6 +2,7 @@
 
 import 'package:cointrail/common/header/appHeader.dart';
 import 'package:cointrail/core_utils/constants/sizes.dart';
+import 'package:cointrail/data/repositories/category_repository.dart';
 import 'package:cointrail/features/add_transaction/widgets/category/category_selector.dart';
 import 'package:cointrail/features/add_transaction/widgets/date_picker.dart';
 import 'package:cointrail/features/add_transaction/widgets/income_expense_toggle.dart';
@@ -20,7 +21,11 @@ class AddTransactionPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => AddTransactionController(TransactionRepository()),
+      create: (_) => AddTransactionController(
+        TransactionRepository(),
+        CategoryRepository(),
+        // Add the missing third argument here based on your controller's constructor
+      ),
       child: const _AddTransactionView(),
     );
   }

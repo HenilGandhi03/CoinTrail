@@ -1,7 +1,11 @@
 import 'package:cointrail/data/models/category_model.dart';
 import 'package:cointrail/features/settings/controller/settings_controller.dart';
+import 'package:cointrail/features/settings/widgets/common/add_category_sheet.dart';
+import 'package:cointrail/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:cointrail/features/settings/widgets/common/settings_card.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
 class CustomCategoriesSection extends StatelessWidget {
   final SettingsController controller;
@@ -37,8 +41,17 @@ class CustomCategoriesSection extends StatelessWidget {
                   ),
                   IconButton(
                     icon: const Icon(Icons.add),
-                    onPressed: () {
-                      // navigate to AddCategoryPage (next step)
+                    onPressed: () async {
+                      final category =
+                          await showModalBottomSheet<CategoryModel>(
+                            context: context,
+                            isScrollControlled: true,
+                            builder: (_) => const AddCategorySheet(),
+                          );
+
+                      if (category != null) {
+                        controller.addCategory(category);
+                      }
                     },
                   ),
                 ],
