@@ -2,6 +2,7 @@ import 'package:cointrail/features/authentication/screens/login/login_page.dart'
 import 'package:cointrail/features/authentication/screens/register/register_page.dart';
 import 'package:cointrail/features/authentication/screens/splash/splash_onboarding_screen.dart';
 import 'package:cointrail/features/home/controller/home_controller.dart';
+import 'package:cointrail/features/home/screens/all_transactions_page.dart';
 import 'package:cointrail/features/root/root_page.dart';
 import 'package:cointrail/routes/routes.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
@@ -17,6 +18,13 @@ class AppRoutes {
     GetPage(name: TRoutes.login, page: () => const LoginPage()),
 
     GetPage(name: TRoutes.register, page: () => const RegisterPage()),
+    GetPage(
+      name: TRoutes.allTransaction,
+      page: () => ChangeNotifierProvider(
+        create: (_) => HomeController(),
+        child: const AllTransactionsPage(),
+      ),
+    ),
 
     // 👇 SINGLE APP SHELL
     GetPage(

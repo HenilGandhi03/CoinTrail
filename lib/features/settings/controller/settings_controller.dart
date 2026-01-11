@@ -26,11 +26,6 @@ class SettingsController extends ChangeNotifier {
     notifyListeners();
   }
 
-  // void setImageUrl(String url) {
-  //   imageUrl = url;
-  //   notifyListeners();
-  // }
-
   void updateBudget(String value) {
     final parsed = double.tryParse(value.replaceAll(RegExp(r'[^0-9]'), ''));
     if (parsed == null) return;

@@ -1,7 +1,10 @@
 import 'package:cointrail/common/widgets/section_header.dart';
 import 'package:cointrail/features/home/controller/home_controller.dart';
 import 'package:cointrail/features/home/widgets/recent_transaction/recent_transaction_tile.dart';
+import 'package:cointrail/routes/routes.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:provider/provider.dart';
 
 class RecentTransactionsSection extends StatelessWidget {
@@ -24,6 +27,7 @@ class RecentTransactionsSection extends StatelessWidget {
           title: 'Recent Transactions',
           action: TextButton(
             onPressed: () {
+              Get.toNamed(TRoutes.allTransaction);
               // Navigate to full transaction list later
             },
             child: const Text('View all'),

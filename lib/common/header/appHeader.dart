@@ -11,6 +11,7 @@ class AppHeader extends StatelessWidget {
     this.bottom,
     this.home_carousel,
     this.bottom_analysis,
+    this.bottom_alltx,
     this.extendedHeight = false,
     this.centerWidget,
     this.showBack = false,
@@ -37,6 +38,7 @@ class AppHeader extends StatelessWidget {
   final Widget? bottom;
 
   final Widget? bottom_analysis;
+  final Widget? bottom_alltx;
 
   // Optional widget shown in the center (like a profile picture)
   final Widget? centerWidget;
@@ -83,6 +85,7 @@ class AppHeader extends StatelessWidget {
         extendedHeight: extendedHeight,
         centerWidget: centerWidget,
         bottom_analysis: bottom_analysis,
+        bottom_alltx: bottom_alltx,
         showBack: showBack,
         showNotification: showNotification,
         onBack: onBack,
@@ -106,6 +109,7 @@ class _AppHeaderDelegate extends SliverPersistentHeaderDelegate {
     this.bottom,
     this.home_carousel,
     this.bottom_analysis,
+    this.bottom_alltx,
     required this.extendedHeight,
     this.centerWidget,
     required this.showBack,
@@ -124,6 +128,7 @@ class _AppHeaderDelegate extends SliverPersistentHeaderDelegate {
   final String? subtitle;
   final Widget? home_carousel;
   final Widget? bottom_analysis;
+  final Widget? bottom_alltx;
   final bool extendedHeight;
   final Widget? bottom;
   final Widget? centerWidget;
@@ -157,6 +162,7 @@ class _AppHeaderDelegate extends SliverPersistentHeaderDelegate {
     // Add height if home_carousel exists
     if (home_carousel != null) height += 140;
     if (bottom_analysis != null) height += 40;
+    if (bottom_alltx != null) height += 0;
 
     // Add height for each pinned widget
     if (pinnedWidgets.isNotEmpty) height += 60 * pinnedWidgets.length;
@@ -340,6 +346,11 @@ class _AppHeaderDelegate extends SliverPersistentHeaderDelegate {
                     if (bottom_analysis != null) ...[
                       const SizedBox(height: TSizes.xxxl),
                       bottom_analysis!,
+                    ],
+                    // Bottom alltx widget (if exists)
+                    if (bottom_alltx != null) ...[
+                      const SizedBox(height: TSizes.xxxl),
+                      bottom_alltx!,
                     ],
 
                     // Pinned widgets (fade slower - only 50% max fade)

@@ -29,25 +29,14 @@ class HomePage extends StatelessWidget {
             ),
             sliver: SliverToBoxAdapter(
               child: Container(
-                padding: const EdgeInsets.all(TSizes.lg),
+                padding: const EdgeInsets.fromLTRB(TSizes.md, 0, TSizes.md, 0),
                 decoration: BoxDecoration(
                   color: colors.surfaceContainerHigh,
                   borderRadius: BorderRadius.circular(TSizes.cardRadiusLg),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.06),
-                      blurRadius: 12,
-                      offset: const Offset(0, 6),
-                    ),
-                  ],
                 ),
                 child: const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SpendingByCategorySection(),
-                    SizedBox(height: TSizes.spaceBtwSections),
-                    RecentTransactionsSection(),
-                  ],
+                  children: [RecentTransactionsSection()],
                 ),
               ),
             ),
