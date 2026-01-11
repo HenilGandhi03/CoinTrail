@@ -110,19 +110,19 @@ class SettingsController extends ChangeNotifier {
   }
 
   final List<CategoryModel> _customCategories = [
-    CategoryModel(
+    CategoryModel.fromUI(
       id: 'coffee',
       name: 'Coffee & Drinks',
       icon: Icons.local_cafe,
       color: Colors.orange,
     ),
-    CategoryModel(
+    CategoryModel.fromUI(
       id: 'gym',
       name: 'Gym & Fitness',
       icon: Icons.fitness_center,
       color: Colors.green,
     ),
-    CategoryModel(
+    CategoryModel.fromUI(
       id: 'pets',
       name: 'Pet Expenses',
       icon: Icons.pets,

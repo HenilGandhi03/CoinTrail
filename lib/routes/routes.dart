@@ -14,4 +14,5 @@ class TRoutes {
   static const analysis = '/analysis';
   static const search = '/search';
   static const settings = '/settings';
+  static const hiveDebugLogs = '/hive_debug_logs';
 }

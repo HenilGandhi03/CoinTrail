@@ -59,7 +59,12 @@ class SearchFiltersSection extends StatelessWidget {
               const SizedBox(height: TSizes.lg),
 
               // ───────── SEARCH BUTTON ─────────
-              SearchButton(onPressed: controller.search),
+              SearchButton(
+                onPressed: () {
+                  controller.closeCalendar();
+                  controller.closeCategorySelector();
+                },
+              ),
             ],
           ),
         );

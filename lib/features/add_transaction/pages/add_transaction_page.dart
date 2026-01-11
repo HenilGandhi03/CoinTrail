@@ -10,6 +10,7 @@ import 'package:cointrail/features/add_transaction/widgets/payment_mode_selector
 import 'package:cointrail/features/add_transaction/widgets/scan_receipt_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:cointrail/data/repositories/transaction_repository.dart';
 
 import '../controller/add_transaction_controller.dart';
 
@@ -19,7 +20,7 @@ class AddTransactionPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => AddTransactionController(),
+      create: (_) => AddTransactionController(TransactionRepository()),
       child: const _AddTransactionView(),
     );
   }
@@ -128,10 +129,21 @@ class _AddTransactionView extends StatelessWidget {
                     SizedBox(
                       height: 54,
                       child: ElevatedButton(
-                        onPressed: () {
-                          final tx = controller.createTransaction();
-                          Navigator.pop(context, tx);
+                        onPressed: () async {
+                          try {
+                            await controller.saveTransaction();
+                            Navigator.pop(context, true);
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Please fill all required fields',
+                                ),
+                              ),
+                            );
+                          }
                         },
+
                         child: Text(
                           controller.isIncome ? 'ADD INCOME' : 'ADD EXPENSE',
                         ),

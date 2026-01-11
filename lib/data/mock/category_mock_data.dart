@@ -1,58 +1,115 @@
+// import 'package:flutter/material.dart';
+// import '../models/category_model.dart';
+
+// class CategoryMockData {
+//   static const List<CategoryModel> expenseCategories = [
+//     CategoryModel(
+//       id: 'food',
+//       name: 'Food',
+//       icon: Icons.restaurant_rounded,
+//       color: Color(0xFFEF4444),
+//     ),
+//     CategoryModel(
+//       id: 'transport',
+//       name: 'Transport',
+//       icon: Icons.directions_car_rounded,
+//       color: Color(0xFF3B82F6),
+//     ),
+//     CategoryModel(
+//       id: 'bills',
+//       name: 'Bills',
+//       icon: Icons.receipt_long_rounded,
+//       color: Color(0xFF22C55E),
+//     ),
+//     CategoryModel(
+//       id: 'shopping',
+//       name: 'Shopping',
+//       icon: Icons.shopping_bag_rounded,
+//       color: Color(0xFFF59E0B),
+//     ),
+//     CategoryModel(
+//       id: 'others',
+//       name: 'Others',
+//       icon: Icons.more_horiz_rounded,
+//       color: Color(0xFF9CA3AF),
+//     ),
+//   ];
+
+//   static const List<CategoryModel> incomeCategories = [
+//     CategoryModel(
+//       id: 'salary',
+//       name: 'Salary',
+//       icon: Icons.work_rounded,
+//       color: Color(0xFF10B981),
+//       isIncome: true,
+//     ),
+//     CategoryModel(
+//       id: 'freelance',
+//       name: 'Freelance',
+//       icon: Icons.laptop_mac_rounded,
+//       color: Color(0xFF6366F1),
+//       isIncome: true,
+//     ),
+//   ];
+
+//   static List<CategoryModel> get all => [
+//     ...expenseCategories,
+//     ...incomeCategories,
+//   ];
+// }
 import 'package:flutter/material.dart';
 import '../models/category_model.dart';
 
 class CategoryMockData {
-  static const List<CategoryModel> expenseCategories = [
-    CategoryModel(
+  static final List<CategoryModel> expenseCategories = [
+    CategoryModel.fromUI(
       id: 'food',
       name: 'Food',
       icon: Icons.restaurant_rounded,
-      color: Color(0xFFEF4444),
+      color: const Color(0xFFEF4444),
     ),
-    CategoryModel(
+    CategoryModel.fromUI(
       id: 'transport',
       name: 'Transport',
       icon: Icons.directions_car_rounded,
-      color: Color(0xFF3B82F6),
+      color: const Color(0xFF3B82F6),
     ),
-    CategoryModel(
+    CategoryModel.fromUI(
       id: 'bills',
       name: 'Bills',
       icon: Icons.receipt_long_rounded,
-      color: Color(0xFF22C55E),
+      color: const Color(0xFF22C55E),
     ),
-    CategoryModel(
+    CategoryModel.fromUI(
       id: 'shopping',
       name: 'Shopping',
       icon: Icons.shopping_bag_rounded,
-      color: Color(0xFFF59E0B),
+      color: const Color(0xFFF59E0B),
     ),
-    CategoryModel(
+    CategoryModel.fromUI(
       id: 'others',
       name: 'Others',
       icon: Icons.more_horiz_rounded,
-      color: Color(0xFF9CA3AF),
+      color: const Color(0xFF9CA3AF),
     ),
   ];
 
-  static const List<CategoryModel> incomeCategories = [
-    CategoryModel(
+  static final List<CategoryModel> incomeCategories = [
+    CategoryModel.fromUI(
       id: 'salary',
       name: 'Salary',
       icon: Icons.work_rounded,
-      color: Color(0xFF10B981),
+      color: const Color(0xFF10B981),
       isIncome: true,
     ),
-    CategoryModel(
+    CategoryModel.fromUI(
       id: 'freelance',
       name: 'Freelance',
       icon: Icons.laptop_mac_rounded,
-      color: Color(0xFF6366F1),
+      color: const Color(0xFF6366F1),
       isIncome: true,
     ),
   ];
-
-
 
   static List<CategoryModel> get all => [
     ...expenseCategories,

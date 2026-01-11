@@ -1,6 +1,7 @@
 import 'package:cointrail/features/add_transaction/controller/add_transaction_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class DatePicker extends StatelessWidget {
   final AddTransactionController controller;
@@ -10,6 +11,7 @@ class DatePicker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final controller = context.watch<AddTransactionController>(); // 👈 KEY
 
     // Start of week (Monday)
     final startOfWeek = controller.selectedDate.subtract(

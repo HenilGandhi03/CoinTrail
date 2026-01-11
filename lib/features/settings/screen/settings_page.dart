@@ -2,6 +2,7 @@ import 'package:cointrail/common/header/appHeader.dart' show AppHeader;
 import 'package:cointrail/common/header/widgets/profile_avatar.dart';
 import 'package:cointrail/features/settings/controller/settings_controller.dart';
 import 'package:cointrail/features/settings/widgets/custom_categories_section.dart';
+import 'package:cointrail/features/settings/widgets/debug_section.dart';
 import 'package:cointrail/features/settings/widgets/export_data_section.dart';
 import 'package:cointrail/features/settings/widgets/preferences_section.dart';
 import 'package:cointrail/features/settings/widgets/profile_section.dart';
@@ -110,6 +111,7 @@ class _SettingsPageState extends State<SettingsPage> {
               SyncBackupSection(controller: settingsController),
               CustomCategoriesSection(controller: settingsController),
               PreferencesSection(controller: settingsController),
+              DebugSection(),
               SecurityPrivacySection(controller: settingsController),
             ]),
           ),
