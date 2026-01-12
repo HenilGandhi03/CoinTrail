@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cointrail/data/models/category_model.dart';
-import 'package:cointrail/data/mock/category_mock_data.dart';
+import 'package:cointrail/features/add_transaction/controller/add_transaction_controller.dart';
+import 'package:provider/provider.dart';
 import 'category_tile.dart';
 
 class CategorySelector extends StatelessWidget {
@@ -17,9 +18,16 @@ class CategorySelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final categories = isIncome
-        ? CategoryMockData.incomeCategories
-        : CategoryMockData.expenseCategories;
+    final controller = context.watch<AddTransactionController>();
+    final categories = controller.categories;
+
+    // Debug logging
+    print(
+      'CategorySelector: isIncome=$isIncome, categories count=${categories.length}',
+    );
+    for (var category in categories) {
+      print('  - ${category.name} (${category.id})');
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

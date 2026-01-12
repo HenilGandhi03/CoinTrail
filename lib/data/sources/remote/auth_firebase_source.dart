@@ -5,6 +5,9 @@ import '../../models/user_model.dart';
 class AuthFirebaseSource {
   final _auth = FirebaseAuth.instance;
   final _db = FirebaseFirestore.instance;
+  Future<void> updateUserName(String uid, String name) async {
+    await _db.collection('users').doc(uid).update({'username': name});
+  }
 
   Future<UserModel> register({
     required String email,

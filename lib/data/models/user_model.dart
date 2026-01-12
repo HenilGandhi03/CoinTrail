@@ -54,4 +54,6 @@ class UserModel {
   Map<String, dynamic> toMap() {
     return {'id': id, 'email': email, 'username': username};
   }
+
+  copyWith({required String username}) {}
 }

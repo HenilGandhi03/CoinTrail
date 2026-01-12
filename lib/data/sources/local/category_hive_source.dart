@@ -3,10 +3,10 @@ import 'package:hive/hive.dart';
 import '../../models/category_model.dart';
 
 class CategoryHiveSource {
-  static const _boxName = 'categoriesBox';
+  static const _boxName = 'categories';
 
   Future<Box<CategoryModel>> _box() async {
-    return Hive.openBox<CategoryModel>(_boxName);
+    return Hive.box<CategoryModel>(_boxName);
   }
 
   Future<List<CategoryModel>> getAll() async {

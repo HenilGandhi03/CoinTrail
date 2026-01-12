@@ -7,7 +7,6 @@ import 'package:cointrail/features/settings/widgets/export_data_section.dart';
 import 'package:cointrail/features/settings/widgets/preferences_section.dart';
 import 'package:cointrail/features/settings/widgets/profile_section.dart';
 import 'package:cointrail/features/settings/widgets/security_privacy_section.dart';
-import 'package:cointrail/features/settings/widgets/settings_menu_section.dart';
 import 'package:cointrail/features/settings/widgets/sync_backup_section.dart';
 import 'package:flutter/material.dart';
 
