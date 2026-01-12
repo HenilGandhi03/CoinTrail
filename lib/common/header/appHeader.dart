@@ -63,12 +63,6 @@ class AppHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get the current theme for styling
-    final theme = Theme.of(context);
-
-    // Get the color scheme from the theme
-    final colors = theme.colorScheme;
-
     // Get the status bar height (top system UI like battery, time)
     final statusBar = MediaQuery.of(context).padding.top;
 
@@ -91,8 +85,6 @@ class AppHeader extends StatelessWidget {
         onBack: onBack,
         onNotificationTap: onNotificationTap,
         statusBar: statusBar,
-        theme: theme,
-        colors: colors,
         pinnedWidgets: pinnedWidgets,
         scrollableWidgets: scrollableWidgets,
       ),
@@ -117,8 +109,6 @@ class _AppHeaderDelegate extends SliverPersistentHeaderDelegate {
     this.onBack,
     this.onNotificationTap,
     required this.statusBar,
-    required this.theme,
-    required this.colors,
     required this.pinnedWidgets,
     required this.scrollableWidgets,
   });
@@ -137,8 +127,6 @@ class _AppHeaderDelegate extends SliverPersistentHeaderDelegate {
   final VoidCallback? onBack;
   final VoidCallback? onNotificationTap;
   final double statusBar;
-  final ThemeData theme;
-  final ColorScheme colors;
   final List<Widget> pinnedWidgets;
   final List<Widget> scrollableWidgets;
 
@@ -189,6 +177,12 @@ class _AppHeaderDelegate extends SliverPersistentHeaderDelegate {
     double shrinkOffset,
     bool overlapsContent,
   ) {
+    // Get the current theme for styling
+    final theme = Theme.of(context);
+
+    // Get the color scheme from the theme
+    final colors = theme.colorScheme;
+
     // Calculate scroll progress (0.0 = fully expanded, 1.0 = fully collapsed)
     // This gives us a value between 0 and 1 representing the scroll state
     final progress = (shrinkOffset / (maxExtent - minExtent)).clamp(0.0, 1.0);
@@ -400,12 +394,10 @@ class _AppHeaderDelegate extends SliverPersistentHeaderDelegate {
   }
 
   /// Determines if the header should rebuild when parameters change
-  /// Returns true if any key properties have changed
+  /// Returns true if any key properties have changed or to ensure theme changes
   @override
   bool shouldRebuild(covariant _AppHeaderDelegate oldDelegate) {
-    return title != oldDelegate.title ||
-        subtitle != oldDelegate.subtitle ||
-        showBack != oldDelegate.showBack ||
-        showNotification != oldDelegate.showNotification;
+    // Always rebuild to ensure theme changes are reflected
+    return true;
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:cointrail/data/models/category_model.dart';
+import 'package:cointrail/data/repositories/user_repository.dart';
 import 'package:cointrail/data/sources/local/category_hive_source.dart';
 import 'package:cointrail/data/sources/local/settings_hive_source.dart';
 import 'package:flutter/material.dart';
@@ -7,32 +8,53 @@ import 'package:flutter/material.dart';
 enum ExportType { csv, pdf }
 
 class SettingsController extends ChangeNotifier {
-  String fullName = 'Sarah Anderson';
-  String imageUrl = 'https://i.pravatar.cc/300';
-
-  double monthlyBudget = 0;
+  final _userRepo = UserRepository();
   final _settingsHive = SettingsHiveSource();
+
+  String fullName = 'Guest';
+  String imageUrl = 'https://i.pravatar.cc/300';
+  double monthlyBudget = 0;
+
+  final nameController = TextEditingController();
+  final budgetController = TextEditingController();
+  Timer? _debounce;
+  ThemeMode themeMode = ThemeMode.system;
+  bool isDarkMode = false;
+
+  SettingsController() {
+    _init();
+
+    _loadUser();
+    _loadBudget();
+    _categoryHive.seedDefaultsIfEmpty(); // 👈 ADD
+    loadCategories();
+  }
+
+  Future<void> _init() async {
+    await _loadUser();
+    await _loadBudget();
+    // await _loadTheme();
+    await _categoryHive.seedDefaultsIfEmpty();
+    await loadCategories();
+  }
+
+  Future<void> _loadUser() async {
+    final user = await _userRepo.getCurrentUser();
+    fullName = user?.username.isNotEmpty == true ? user!.username : 'User';
+    nameController.text = fullName;
+
+    debugPrint("Settings fullName: $fullName");
+    notifyListeners();
+  }
 
   void updateBudget(String value) {
     final parsed = double.tryParse(value.replaceAll(RegExp(r'[^0-9]'), ''));
     if (parsed == null) return;
 
     monthlyBudget = parsed;
-    _settingsHive.saveBudget(parsed); // 👈 SAVE
+    _settingsHive.saveBudget(parsed);
     _autoSave();
     notifyListeners();
-  }
-
-  final nameController = TextEditingController();
-  final budgetController = TextEditingController();
-
-  Timer? _debounce;
-
-  SettingsController() {
-    _loadBudget();
-    _categoryHive.seedDefaultsIfEmpty(); // 👈 ADD
-
-    loadCategories();
   }
 
   Future<void> _loadBudget() async {
@@ -47,29 +69,19 @@ class SettingsController extends ChangeNotifier {
     notifyListeners();
   }
 
-  // void updateBudget(String value) {
-  //   final parsed = double.tryParse(value.replaceAll(RegExp(r'[^0-9]'), ''));
-  //   if (parsed == null) return;
-
-  //   monthlyBudget = parsed;
-  //   _autoSave();
-  //   notifyListeners();
-  // }
-
   void _autoSave() {
     _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 700), saveProfile);
   }
 
   Future<void> saveProfile() async {
-    // 🔹 MOCK SAVE FOR NOW
-    debugPrint('Auto-saved: $fullName | $monthlyBudget');
+    // 1️⃣ Save locally (instant)
+    await _settingsHive.saveUserName(fullName);
 
-    // 🔹 LATER (Firebase)
-    // await FirebaseFirestore.instance
-    //   .collection('users')
-    //   .doc(uid)
-    //   .update({...});
+    // 2️⃣ Save to Firebase
+    await _userRepo.updateUserName(fullName);
+
+    debugPrint('Auto-saved: $fullName | $monthlyBudget');
   }
 
   bool isExporting = false;
@@ -153,37 +165,15 @@ class SettingsController extends ChangeNotifier {
     await loadCategories();
   }
 
-  // List<CategoryModel> get customCategories =>
-  //     List.unmodifiable(_customCategories);
-
-  // void addCategory(CategoryModel category) {
-  //   _customCategories.add(category);
-  //   notifyListeners();
-  // }
-
-  // void updateCategory(CategoryModel updated) {
-  //   final index = _customCategories.indexWhere((c) => c.id == updated.id);
-  //   if (index == -1) return;
-
-  //   _customCategories[index] = updated;
-  //   notifyListeners();
-  // }
-
-  // void deleteCategory(String id) {
-  //   _customCategories.removeWhere((c) => c.id == id);
-  //   notifyListeners();
-  // }
-
   // =====================
   // Preferences
   // =====================
 
-  bool isDarkMode = false;
   bool pushNotificationsEnabled = true;
 
   void toggleDarkMode(bool value) {
     isDarkMode = value;
-    notifyListeners();
+    // notifyListeners();
 
     // 🔹 MOCK persistence
     debugPrint('Dark mode: $isDarkMode');
