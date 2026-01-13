@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:cointrail/common/widgets/logs.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import '../../models/user_model.dart';
 
 class AuthFirebaseSource {
@@ -10,6 +13,24 @@ class AuthFirebaseSource {
   Future<void> updateUserName(String uid, String name) async {
     logGreen('Updating username for UID: $uid to "$name"');
     await _db.collection('users').doc(uid).update({'username': name});
+  }
+
+  Future<void> updateUserImage(String uid, String imageUrl) async {
+    await _db.collection('users').doc(uid).update({'imageUrl': imageUrl});
+  }
+
+  Future<String> uploadProfileImage({
+    required String uid,
+    required File file,
+  }) async {
+    final ref = FirebaseStorage.instance
+        .ref()
+        .child('profile_images')
+        .child('$uid.jpg');
+
+    await ref.putFile(file);
+
+    return await ref.getDownloadURL();
   }
 
   Future<UserModel> register({
@@ -30,6 +51,7 @@ class AuthFirebaseSource {
       id: credential.user!.uid,
       email: email,
       username: username,
+      imageUrl: 'https://i.pravatar.cc/300',
     );
 
     await _db.collection('users').doc(user.id).set({
@@ -62,6 +84,7 @@ class AuthFirebaseSource {
         id: credential.user!.uid,
         email: credential.user!.email ?? email,
         username: '',
+        imageUrl: 'https://i.pravatar.cc/300',
       );
 
       await docRef.set(fallbackUser.toMap());

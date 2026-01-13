@@ -48,6 +48,9 @@ class _SettingsPageState extends State<SettingsPage> {
                 centerWidget: ProfileAvatar(
                   imageUrl: settingsController.imageUrl,
                   name: settingsController.fullName,
+                  onTap: () {
+                    settingsController.pickAndUpdateProfileImage();
+                  },
                 ),
               ),
 

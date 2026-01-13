@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:cointrail/common/widgets/logs.dart';
 import 'package:cointrail/data/models/category_model.dart';
 import 'package:cointrail/data/repositories/user_repository.dart';
 import 'package:cointrail/data/sources/local/category_hive_source.dart';
 import 'package:cointrail/data/sources/local/settings_hive_source.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 enum ExportType { csv, pdf }
 
@@ -13,7 +15,7 @@ class SettingsController extends ChangeNotifier {
   final _settingsHive = SettingsHiveSource();
 
   String fullName = 'Guest';
-  String imageUrl = 'https://i.pravatar.cc/300';
+  String imageUrl = '';
   double monthlyBudget = 0;
 
   final nameController = TextEditingController();
@@ -38,9 +40,20 @@ class SettingsController extends ChangeNotifier {
     await loadCategories();
   }
 
+  Future<void> updateImage(String newImageUrl) async {
+    imageUrl = newImageUrl;
+    notifyListeners();
+
+    await _userRepo.updateUserImage(newImageUrl);
+  }
+
   Future<void> _loadUser() async {
     final user = await _userRepo.getCurrentUser();
     fullName = user?.username.isNotEmpty == true ? user!.username : 'Guest';
+    imageUrl = user?.imageUrl.isNotEmpty == true
+        ? user!.imageUrl
+        : 'https://i.pravatar.cc/300';
+
     nameController.text = fullName;
 
     debugPrint("Settings fullName: $fullName");
@@ -193,6 +206,64 @@ class SettingsController extends ChangeNotifier {
 
     // 🔹 LATER
     // Firebase / OneSignal / FCM
+  }
+
+  // Future<void> pickProfileImage() async {
+  //   final picker = ImagePicker();
+
+  //   final picked = await picker.pickImage(
+  //     source: ImageSource.gallery,
+  //     imageQuality: 75,
+  //   );
+
+  //   if (picked == null) return;
+
+  //   final file = File(picked.path);
+
+  //   // Instant UI feedback (optional)
+  //   imageUrl = picked.path;
+  //   notifyListeners();
+
+  //   // Persist
+  //   await _userRepo.updateUserImage(file);
+
+  //   // Reload from Hive (final URL)
+  //   await _loadUser();
+  // }
+
+  final _picker = ImagePicker();
+
+  Future<void> pickAndUpdateProfileImage() async {
+    final picked = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 75,
+    );
+
+    if (picked == null) return;
+
+    final file = File(picked.path);
+
+    final user = await _userRepo.getCurrentUser();
+    if (user == null || user.id.isEmpty) return;
+
+    // 1️⃣ Upload to Firebase Storage
+    final imageUrl = await _userRepo.uploadProfileImage(
+      uid: user.id,
+      file: file,
+    );
+
+    // 2️⃣ Save locally + Firestore
+    await _userRepo.updateUserImage(imageUrl);
+
+    // 3️⃣ Update UI instantly
+    this.imageUrl = imageUrl;
+    notifyListeners();
+  }
+
+  Future<void> logout(BuildContext context) async {
+    await _userRepo.logout();
+    // 🔁 Navigate to login & clear stack
+    Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
   }
 
   @override

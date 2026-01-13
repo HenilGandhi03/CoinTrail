@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cointrail/common/widgets/logs.dart';
 
 import '../models/user_model.dart';
@@ -11,6 +13,18 @@ class UserRepository {
   /// Get cached user (Hive)
   Future<UserModel?> getCurrentUser() {
     return _local.getUser();
+  }
+
+  Future<String> uploadProfileImage({required String uid, required File file}) {
+    return _remote.uploadProfileImage(uid: uid, file: file);
+  }
+
+  Future<void> logout() async {
+    // 1️⃣ Firebase sign out
+    await _remote.logout();
+
+    // 2️⃣ Clear local user cache
+    await _local.clear();
   }
 
   /// Update username everywhere
@@ -30,5 +44,20 @@ class UserRepository {
     logGreen('💾 User name updated in local to: $name');
     // 2️⃣ Save remotely (Firebase)
     await _remote.updateUserName(updated.id, name);
+  }
+
+  Future<void> updateUserImage(String imageUrl) async {
+    final user = await _local.getUser();
+    if (user == null) return;
+
+    final updated = user.copyWith(imageUrl: imageUrl);
+
+    // 1️⃣ Save locally (instant)
+    await _local.saveUser(updated);
+
+    // 2️⃣ Save remotely (Firebase)
+    if (updated.id.isNotEmpty) {
+      await _remote.updateUserImage(updated.id, imageUrl);
+    }
   }
 }

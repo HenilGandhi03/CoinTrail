@@ -32,16 +32,6 @@ class SecurityPrivacySection extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: 16),
-
-          _SecurityTile(
-            icon: Icons.credit_card,
-            title: 'Manage Payment Methods',
-            onTap: () {
-              // Navigator.push(...)
-            },
-          ),
-
           const SizedBox(height: 12),
 
           _SecurityTile(
@@ -55,10 +45,30 @@ class SecurityPrivacySection extends StatelessWidget {
           const SizedBox(height: 12),
 
           _SecurityTile(
-            icon: Icons.person_outline,
-            title: 'Privacy Settings',
-            onTap: () {
-              // Navigator.push(...)
+            icon: Icons.logout_sharp,
+            title: 'Log Out',
+            onTap: () async {
+              final confirmed = await showDialog<bool>(
+                context: context,
+                builder: (_) => AlertDialog(
+                  title: const Text('Log out'),
+                  content: const Text('Are you sure you want to log out?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: const Text('Cancel'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      child: const Text('Log out'),
+                    ),
+                  ],
+                ),
+              );
+
+              if (confirmed == true) {
+                await controller.logout(context);
+              }
             },
           ),
         ],
