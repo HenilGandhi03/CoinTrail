@@ -27,14 +27,14 @@ class SettingsController extends ChangeNotifier {
 
     _loadUser();
     _loadBudget();
-    _categoryHive.seedDefaultsIfEmpty();
+    // _categoryHive.seedDefaultsIfEmpty();
     loadCategories();
   }
 
   Future<void> _init() async {
     await _loadUser();
     await _loadBudget();
-    await _categoryHive.seedDefaultsIfEmpty();
+    await _categoryHive.seedSystemCategories();
     await loadCategories();
   }
 

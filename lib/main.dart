@@ -14,7 +14,7 @@ void main() async {
 
   // Seed default categories and debug
   final categorySource = CategoryHiveSource();
-  await categorySource.seedDefaultsIfEmpty();
+  await categorySource.seedSystemCategories();
 
   // Debug categories after initialization
   HiveService.debugHiveStatus();

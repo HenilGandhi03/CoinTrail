@@ -37,6 +37,9 @@ class CategoryModel {
 
   @HiveField(4)
   final bool isIncome;
+  
+  @HiveField(5)
+  final bool isSystem; 
 
   // ✅ Hive-compatible constructor
   CategoryModel({
@@ -44,6 +47,8 @@ class CategoryModel {
     required this.name,
     required this.iconCode,
     required this.colorValue,
+    required this.isSystem,
+
     this.isIncome = false,
   });
 
@@ -59,6 +64,7 @@ class CategoryModel {
     required IconData icon,
     required Color color,
     bool isIncome = false,
+    bool isSystem = false,
   }) {
     return CategoryModel(
       id: id,
@@ -66,6 +72,7 @@ class CategoryModel {
       iconCode: icon.codePoint,
       colorValue: color.toARGB32(),
       isIncome: isIncome,
+      isSystem: isSystem,
     );
   }
 }
