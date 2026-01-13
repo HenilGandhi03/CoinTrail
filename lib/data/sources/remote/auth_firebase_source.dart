@@ -1,3 +1,4 @@
+import 'package:cointrail/common/widgets/logs.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/user_model.dart';
@@ -5,7 +6,9 @@ import '../../models/user_model.dart';
 class AuthFirebaseSource {
   final _auth = FirebaseAuth.instance;
   final _db = FirebaseFirestore.instance;
+
   Future<void> updateUserName(String uid, String name) async {
+    logGreen('Updating username for UID: $uid to "$name"');
     await _db.collection('users').doc(uid).update({'username': name});
   }
 

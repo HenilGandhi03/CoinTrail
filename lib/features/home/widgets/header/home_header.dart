@@ -18,7 +18,7 @@ class HomeHeader extends StatelessWidget {
       subtitle: TTexts.header_Tagline,
       showNotification: true,
       home_carousel: HomeBalanceCarousel(),
-      onNotificationTap: () {
+      onNotificationTap: () async {
         // TODO: navigate to notifications
       },
     );

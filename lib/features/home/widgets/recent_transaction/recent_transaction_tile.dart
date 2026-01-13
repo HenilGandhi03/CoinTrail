@@ -30,7 +30,7 @@ class RecentTransactionTile extends StatelessWidget {
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
             child: Icon(
               _iconForCategory(transaction.category),
-              size: 18,
+              size: 26,
               color: amountColor,
             ),
           ),

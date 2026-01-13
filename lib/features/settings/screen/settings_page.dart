@@ -35,32 +35,37 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          /// ───────── HEADER (PINNED) ─────────
-          AppHeader(
-            title: 'Settings',
-            showBack: true,
-            showNotification: true,
-            centerWidget: ProfileAvatar(
-              imageUrl: settingsController.imageUrl,
-              name: settingsController.fullName,
-            ),
-          ),
+      body: ListenableBuilder(
+        listenable: settingsController,
+        builder: (context, child) {
+          return CustomScrollView(
+            slivers: [
+              /// ───────── HEADER (PINNED) ─────────
+              AppHeader(
+                title: 'Settings',
+                showBack: true,
+                showNotification: true,
+                centerWidget: ProfileAvatar(
+                  imageUrl: settingsController.imageUrl,
+                  name: settingsController.fullName,
+                ),
+              ),
 
-          /// ───────── SETTINGS CONTENT ─────────
-          SliverList(
-            delegate: SliverChildListDelegate([
-              ProfileSection(controller: settingsController),
-              ExportDataSection(controller: settingsController),
-              SyncBackupSection(controller: settingsController),
-              CustomCategoriesSection(controller: settingsController),
-              PreferencesSection(controller: settingsController),
-              DebugSection(),
-              SecurityPrivacySection(controller: settingsController),
-            ]),
-          ),
-        ],
+              /// ───────── SETTINGS CONTENT ─────────
+              SliverList(
+                delegate: SliverChildListDelegate([
+                  ProfileSection(controller: settingsController),
+                  ExportDataSection(controller: settingsController),
+                  SyncBackupSection(controller: settingsController),
+                  CustomCategoriesSection(controller: settingsController),
+                  PreferencesSection(controller: settingsController),
+                  DebugSection(),
+                  SecurityPrivacySection(controller: settingsController),
+                ]),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

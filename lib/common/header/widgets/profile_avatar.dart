@@ -28,7 +28,7 @@ class ProfileAvatar extends StatelessWidget {
 
         Text(
           name,
-          style: theme.textTheme.titleLarge?.copyWith(color: colors.secondary),
+          style: theme.textTheme.titleLarge?.copyWith(color: colors.onSurface),
         ),
       ],
     );

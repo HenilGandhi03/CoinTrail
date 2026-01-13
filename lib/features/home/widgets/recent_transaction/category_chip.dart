@@ -17,9 +17,10 @@ class CategoryChip extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: Theme.of(
-          context,
-        ).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500),
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+          fontWeight: FontWeight.w500,
+          color: colors.onPrimary,
+        ),
       ),
     );
   }

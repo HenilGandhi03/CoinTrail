@@ -15,3 +15,21 @@ For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
 # CoinTrail
+
+
+
+Settings page
+↓
+UserRepository.updateUserName()
+↓
+UserHiveSource.saveUser()
+↓
+userBox emits change event
+↓
+HomeController listener fires
+↓
+_loadUser()
+↓
+notifyListeners()
+↓
+HomeHeader rebuilds

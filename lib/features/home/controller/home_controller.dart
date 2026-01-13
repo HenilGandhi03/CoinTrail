@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'package:cointrail/common/widgets/logs.dart';
 import 'package:cointrail/data/models/expense_summary_model.dart';
 import 'package:cointrail/data/models/monthly_summary_model.dart';
 import 'package:cointrail/data/models/transaction_model.dart';
+import 'package:cointrail/data/models/user_model.dart';
 import 'package:cointrail/data/repositories/home_repository.dart';
 import 'package:cointrail/features/home/widgets/horizontal_header.dart';
 import 'package:flutter/material.dart';
@@ -13,21 +15,37 @@ class HomeController extends ChangeNotifier {
   }
   MonthlySummaryModel? _monthlySummary;
   ExpenseSummaryModel? _expenseSummary;
+  late final StreamSubscription _userSub;
 
   Future<void> _init() async {
     await _load();
     await _loadUser();
     _listenToHive();
+    _listenToUserBox();
   }
 
   final HomeRepository _repository = HomeRepository();
 
-  String _userName = '—';
+  String _userName = 'Guest';
   String get userName => _userName;
 
   Future<void> _loadUser() async {
     _userName = await _repository.getUserName();
+    debugPrint('🏠 Home controller loaded user name: $_userName');
     notifyListeners();
+  }
+
+  void _listenToUserBox() {
+    _userSub = Hive.box<UserModel>('userBox').watch().listen((_) {
+      logGreen('🔁 userBox changed → HomeController reloading');
+      _loadUser();
+    });
+  }
+
+  // Manual method to refresh user name (for testing)
+  Future<void> refreshUserName() async {
+    debugPrint('🔄 Manually refreshing user name...');
+    await _loadUser();
   }
 
   List<TransactionModel> _recentTransactions = [];
@@ -56,6 +74,7 @@ class HomeController extends ChangeNotifier {
   var selectedPeriod = TransactionPeriod.daily;
 
   late final StreamSubscription _hiveSubscription;
+  StreamSubscription? _settingsSubscription;
 
   Future<void> _load() async {
     _recentTransactions = _repository.getRecentTransactions(limit: 5);
@@ -70,8 +89,34 @@ class HomeController extends ChangeNotifier {
     _hiveSubscription = Hive.box<TransactionModel>(
       'transactions',
     ).watch().listen((_) => _load());
-    Hive.box('settingsBox').watch().listen((_) => _load()); // 👈 ADD THIS LINE
+
+    // Ensure settings box is open and listen to changes
+    // _initializeSettingsListener();
   }
+
+  // Future<void> _initializeSettingsListener() async {
+  //   try {
+  //     // Ensure the settings box is open
+  //     // final settingsBox = await Hive.openBox('settingsBox');
+  //     debugPrint('📦 Settings box opened successfully');
+  //     _hiveSubscription = Hive.box<UserModel>('userBox').watch().listen((_) {
+  //       _loadUser();
+  //     });
+
+  //     // _settingsSubscription = settingsBox.watch().listen((event) async {
+  //     //   debugPrint('🔄 Settings box changed: ${event.key} = ${event.value}');
+  //     //   if (event.key == 'fullName') {
+  //     //     debugPrint(
+  //     //       '🔄 Name changed to: ${event.value}, reloading user name...',
+  //     //     );
+  //     //     await _loadUser(); // Reload user name when name specifically changes
+  //     //   }
+  //     //   // Don't call _load() here as it might cause unnecessary rebuilds
+  //     // });
+  //   } catch (e) {
+  //     debugPrint('❌ Error setting up settings listener: $e');
+  //   }
+  // }
 
   void updatePeriod(TransactionPeriod newPeriod) {
     selectedPeriod = newPeriod;
@@ -85,6 +130,7 @@ class HomeController extends ChangeNotifier {
   @override
   void dispose() {
     _hiveSubscription.cancel();
+    _settingsSubscription?.cancel();
     super.dispose();
   }
 }

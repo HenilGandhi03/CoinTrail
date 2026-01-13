@@ -16,7 +16,7 @@ class HiveService {
 
     await Hive.openBox<CategoryModel>('categories');
     await Hive.openBox<TransactionModel>('transactions');
-    await Hive.openBox<UserModel>('user');
+    await Hive.openBox<UserModel>('userBox');
   }
 
   // Enhanced debugging method
@@ -59,6 +59,6 @@ class HiveService {
     print('=== HIVE STATUS ===');
     print('Categories box open: ${Hive.isBoxOpen('categories')}');
     print('Transactions box open: ${Hive.isBoxOpen('transactions')}');
-    print('User box open: ${Hive.isBoxOpen('user')}');
+    print('User box open: ${Hive.isBoxOpen('userBox')}');
   }
 }

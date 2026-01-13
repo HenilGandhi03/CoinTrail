@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cointrail/common/widgets/logs.dart';
 import 'package:cointrail/data/models/category_model.dart';
 import 'package:cointrail/data/repositories/user_repository.dart';
 import 'package:cointrail/data/sources/local/category_hive_source.dart';
@@ -40,7 +41,19 @@ class SettingsController extends ChangeNotifier {
 
   Future<void> _loadUser() async {
     final user = await _userRepo.getCurrentUser();
-    fullName = user?.username.isNotEmpty == true ? user!.username : 'User';
+
+    // if (user?.username.isNotEmpty == true) {
+    //   fullName = user!.username;
+    //   debugPrint("📱 Loaded from Firebase: $fullName");
+    // } else {
+    //   // Fall back to locally saved name
+    //   final savedName = await _settingsHive.getUserName();
+    //   fullName = savedName?.isNotEmpty == true ? savedName! : 'Guest';
+    //   debugPrint("💾 Loaded from Hive: $fullName (savedName: $savedName)");
+    // }
+
+    // nameController.text = fullName;
+    fullName = user?.username.isNotEmpty == true ? user!.username : 'Guest';
     nameController.text = fullName;
 
     debugPrint("Settings fullName: $fullName");
@@ -65,8 +78,14 @@ class SettingsController extends ChangeNotifier {
 
   void updateName(String value) {
     fullName = value;
+    if (value.trim().isEmpty) return;
+    fullName = value.trim();
+    // Debounced save for Firebase (to avoid too many API calls)
     _autoSave();
     notifyListeners();
+
+    logGreen('💾 Updated Name to Save: $fullName');
+    debugPrint('💾 Immediately saved to Hive: $fullName');
   }
 
   void _autoSave() {
@@ -75,13 +94,10 @@ class SettingsController extends ChangeNotifier {
   }
 
   Future<void> saveProfile() async {
-    // 1️⃣ Save locally (instant)
-    await _settingsHive.saveUserName(fullName);
-
-    // 2️⃣ Save to Firebase
+    // Save to Firebase (local Hive saving is now immediate in updateName)
     await _userRepo.updateUserName(fullName);
 
-    debugPrint('Auto-saved: $fullName | $monthlyBudget');
+    logGreen('Auto-saved to Firebase: $fullName | $monthlyBudget');
   }
 
   bool isExporting = false;

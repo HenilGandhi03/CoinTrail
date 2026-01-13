@@ -10,12 +10,12 @@ void main() async {
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  await HiveService.init(); 
-  
+  await HiveService.init();
+
   // Seed default categories and debug
   final categorySource = CategoryHiveSource();
   await categorySource.seedDefaultsIfEmpty();
-  
+
   // Debug categories after initialization
   HiveService.debugHiveStatus();
   HiveService.debugCategories();

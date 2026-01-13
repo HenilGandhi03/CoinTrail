@@ -10,18 +10,18 @@ class TColorScheme {
    * ============================================================ */
 
   // Brand
-  static const Color lightPrimary = Color(0xFF2EC4B6); // Teal
-  static const Color lightSecondary = Color(0xFFFF9F1C); // Orange
+  static const Color lightPrimary = Color(0xFF004F2D); // Teal
+  static const Color lightSecondary = Color(0xFFFBFFFE); // Orange
 
   // Canvas & Surfaces
-  static const Color lightBackground = Color(0xFFFFFFFF); // White
-  static const Color lightSurface = Color(0xFFFFFFFF); // Cards / sections
-  static const Color lightSurfaceContainer = Color(0xFFCBF3F0); // Soft mint
+  static const Color lightBackground = Color(0xFFFBFFFE); // White
+  static const Color lightSurface = Color(0xFFFBFFFE); // Cards / sections
+  static const Color lightSurfaceContainer = Color(0xFF5DA271); // Soft mint
 
   // Text
   static const Color lightOnBackground = Color(0xFF0F172A);
   static const Color lightOnSurface = Color(0xFF0F172A);
-
+  static const Color lightOnSurfaceContainer = Color(0xFFFBFFFE);
   // Semantic
   static const Color income = Color(0xFF2EC4B6);
   static const Color expense = Color(0xFFFF9F1C);
@@ -60,7 +60,7 @@ class TColorScheme {
    * ============================================================ */
 
   // Brand
-  static const Color darkPrimary = Color(0xFF0466C8);
+  static const Color darkPrimary = Color(0xFF2F66C9);
   static const Color darkSecondary = Color(0xFF5C677D);
 
   // Canvas & Surfaces

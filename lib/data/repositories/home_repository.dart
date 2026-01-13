@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:cointrail/common/widgets/logs.dart';
 import 'package:cointrail/data/models/category_spending_model.dart';
 import 'package:cointrail/data/models/expense_summary_model.dart';
 import 'package:cointrail/data/models/incomeSummaryModel.dart';
@@ -16,12 +17,29 @@ class HomeRepository {
   final _settingsRepo = SettingsHiveSource();
 
   // ───────── USER ─────────
+  // Future<String> getUserName() async {
+  //   final user = await _userRepo.getCurrentUser();
+  //   debugPrint(
+  //     '🟢 Cached user → id: ${user?.id}, '
+  //     'email: ${user?.email}, '
+  //     'username: ${user?.username}',
+  //   );
+
+  //   if (user?.username.isNotEmpty == true) {
+  //     debugPrint("📱 Home: Loaded from Firebase: ${user!.username}");
+  //     return user.username;
+  //   } else {
+  //     // Fall back to locally saved name
+  //     final savedName = await _settingsRepo.getUserName();
+  //     final result = savedName?.isNotEmpty == true ? savedName! : 'Guest';
+  //     debugPrint("💾 Home: Loaded from Hive: $result (savedName: $savedName)");
+  //     return result;
+  //   }
+  // }
   Future<String> getUserName() async {
     final user = await _userRepo.getCurrentUser();
-    debugPrint(
-      '🟢 Cached user → id: ${user?.id}, '
-      'email: ${user?.email}, '
-      'username: ${user?.username}',
+    logGreen(
+      '🟢 Cached user → id: ${user?.id}, email: ${user?.email}, username: ${user?.username}',
     );
     return user?.username.isNotEmpty == true ? user!.username : 'Guest';
   }
