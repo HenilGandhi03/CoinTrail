@@ -15,6 +15,8 @@ class HomeController extends ChangeNotifier {
   }
   MonthlySummaryModel? _monthlySummary;
   ExpenseSummaryModel? _expenseSummary;
+  late final StreamSubscription _settingsSub;
+
   late final StreamSubscription _userSub;
 
   Future<void> _init() async {
@@ -22,6 +24,7 @@ class HomeController extends ChangeNotifier {
     await _loadUser();
     _listenToHive();
     _listenToUserBox();
+    _listenToSettingsBox();
   }
 
   final HomeRepository _repository = HomeRepository();
@@ -39,6 +42,15 @@ class HomeController extends ChangeNotifier {
     _userSub = Hive.box<UserModel>('userBox').watch().listen((_) {
       logGreen('🔁 userBox changed → HomeController reloading');
       _loadUser();
+    });
+  }
+
+  void _listenToSettingsBox() {
+    _settingsSub = Hive.box('settingsBox').watch().listen((event) {
+      if (event.key == 'monthlyBudget') {
+        logGreen('🔁 Budget changed → reloading summaries');
+        _load(); // reload monthly + expense summaries
+      }
     });
   }
 
@@ -89,34 +101,7 @@ class HomeController extends ChangeNotifier {
     _hiveSubscription = Hive.box<TransactionModel>(
       'transactions',
     ).watch().listen((_) => _load());
-
-    // Ensure settings box is open and listen to changes
-    // _initializeSettingsListener();
   }
-
-  // Future<void> _initializeSettingsListener() async {
-  //   try {
-  //     // Ensure the settings box is open
-  //     // final settingsBox = await Hive.openBox('settingsBox');
-  //     debugPrint('📦 Settings box opened successfully');
-  //     _hiveSubscription = Hive.box<UserModel>('userBox').watch().listen((_) {
-  //       _loadUser();
-  //     });
-
-  //     // _settingsSubscription = settingsBox.watch().listen((event) async {
-  //     //   debugPrint('🔄 Settings box changed: ${event.key} = ${event.value}');
-  //     //   if (event.key == 'fullName') {
-  //     //     debugPrint(
-  //     //       '🔄 Name changed to: ${event.value}, reloading user name...',
-  //     //     );
-  //     //     await _loadUser(); // Reload user name when name specifically changes
-  //     //   }
-  //     //   // Don't call _load() here as it might cause unnecessary rebuilds
-  //     // });
-  //   } catch (e) {
-  //     debugPrint('❌ Error setting up settings listener: $e');
-  //   }
-  // }
 
   void updatePeriod(TransactionPeriod newPeriod) {
     selectedPeriod = newPeriod;
@@ -131,6 +116,8 @@ class HomeController extends ChangeNotifier {
   void dispose() {
     _hiveSubscription.cancel();
     _settingsSubscription?.cancel();
+    _settingsSub.cancel();
+    _userSub.cancel();
     super.dispose();
   }
 }

@@ -35,36 +35,34 @@ class CategoryHiveSource {
   }
 
   Future<void> seedDefaultsIfEmpty() async {
-    Future<void> seedDefaultsIfEmpty() async {
-      final box = await _box(); // ✅ reuse
-      if (box.isNotEmpty) return;
-      if (box.isNotEmpty) return;
+    final box = await _box();
 
-      final defaults = [
-        CategoryModel.fromUI(
-          id: 'food',
-          name: 'Food',
-          icon: Icons.restaurant,
-          color: Colors.red,
-        ),
-        CategoryModel.fromUI(
-          id: 'transport',
-          name: 'Transport',
-          icon: Icons.directions_car,
-          color: Colors.blue,
-        ),
-        CategoryModel.fromUI(
-          id: 'salary',
-          name: 'Salary',
-          icon: Icons.work,
-          color: Colors.green,
-          isIncome: true,
-        ),
-      ];
+    if (box.isNotEmpty) return;
 
-      for (final c in defaults) {
-        await box.put(c.id, c);
-      }
+    final defaults = [
+      CategoryModel.fromUI(
+        id: 'food',
+        name: 'Food',
+        icon: Icons.restaurant,
+        color: Colors.red,
+      ),
+      CategoryModel.fromUI(
+        id: 'transport',
+        name: 'Transport',
+        icon: Icons.directions_car,
+        color: Colors.blue,
+      ),
+      CategoryModel.fromUI(
+        id: 'salary',
+        name: 'Salary',
+        icon: Icons.work,
+        color: Colors.green,
+        isIncome: true,
+      ),
+    ];
+
+    for (final c in defaults) {
+      await box.put(c.id, c);
     }
   }
 }

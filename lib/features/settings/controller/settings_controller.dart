@@ -27,32 +27,19 @@ class SettingsController extends ChangeNotifier {
 
     _loadUser();
     _loadBudget();
-    _categoryHive.seedDefaultsIfEmpty(); // 👈 ADD
+    _categoryHive.seedDefaultsIfEmpty();
     loadCategories();
   }
 
   Future<void> _init() async {
     await _loadUser();
     await _loadBudget();
-    // await _loadTheme();
     await _categoryHive.seedDefaultsIfEmpty();
     await loadCategories();
   }
 
   Future<void> _loadUser() async {
     final user = await _userRepo.getCurrentUser();
-
-    // if (user?.username.isNotEmpty == true) {
-    //   fullName = user!.username;
-    //   debugPrint("📱 Loaded from Firebase: $fullName");
-    // } else {
-    //   // Fall back to locally saved name
-    //   final savedName = await _settingsHive.getUserName();
-    //   fullName = savedName?.isNotEmpty == true ? savedName! : 'Guest';
-    //   debugPrint("💾 Loaded from Hive: $fullName (savedName: $savedName)");
-    // }
-
-    // nameController.text = fullName;
     fullName = user?.username.isNotEmpty == true ? user!.username : 'Guest';
     nameController.text = fullName;
 

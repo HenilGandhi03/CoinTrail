@@ -21,7 +21,7 @@ class AppGradients extends ThemeExtension<AppGradients> {
 // Light card gradient
 const lightCardGradient = AppGradients(
   card: LinearGradient(
-    colors: [Color(0xFF5DA271), Color(0xFF004F2D)],
+    colors: [Color(0xFF183A26), Color(0xFF004F2D)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   ),

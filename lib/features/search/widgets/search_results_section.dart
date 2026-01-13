@@ -13,7 +13,7 @@ class SearchResultsSection extends StatelessWidget {
 
     if (controller.results.isEmpty) {
       return const Padding(
-        padding: EdgeInsets.all(0),
+        padding: EdgeInsets.all(5),
         child: Text('No results found'),
       );
     }
