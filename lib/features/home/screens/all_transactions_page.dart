@@ -6,7 +6,6 @@ import 'package:cointrail/features/home/widgets/recent_transaction/recent_transa
 import 'package:cointrail/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:provider/provider.dart';
 
 class AllTransactionsPage extends StatefulWidget {

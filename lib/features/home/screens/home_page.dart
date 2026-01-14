@@ -1,7 +1,5 @@
 import 'package:cointrail/core_utils/constants/sizes.dart';
-import 'package:cointrail/features/home/widgets/carousel_card/home_balance_carousel.dart';
 import 'package:cointrail/features/home/widgets/header/home_header.dart';
-import 'package:cointrail/features/home/widgets/chart/spending_by_category_section.dart';
 import 'package:cointrail/features/home/widgets/recent_transaction/recent_transactions_section.dart';
 import 'package:flutter/material.dart';
 

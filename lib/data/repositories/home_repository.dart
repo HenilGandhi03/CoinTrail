@@ -10,7 +10,6 @@ import 'package:cointrail/data/repositories/transaction_repository.dart';
 import 'package:cointrail/data/repositories/user_repository.dart';
 import 'package:cointrail/data/sources/local/settings_hive_source.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 
 class HomeRepository {
   final _txRepo = TransactionRepository();
