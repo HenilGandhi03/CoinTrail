@@ -3,7 +3,10 @@ import 'package:cointrail/data/models/transaction_model.dart';
 import 'package:cointrail/features/home/controller/home_controller.dart';
 import 'package:cointrail/features/home/widgets/horizontal_header.dart';
 import 'package:cointrail/features/home/widgets/recent_transaction/recent_transaction_tile.dart';
+import 'package:cointrail/routes/routes.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:provider/provider.dart';
 
 class AllTransactionsPage extends StatefulWidget {
@@ -42,12 +45,38 @@ class _AllTransactionsPageState extends State<AllTransactionsPage> {
     }
   }
 
+  Future<bool> _confirmDelete(BuildContext context) async {
+    return await showDialog<bool>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('Delete transaction?'),
+            content: const Text('This action cannot be undone.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, true),
+                child: const Text(
+                  'Delete',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+  }
+
   @override
   Widget build(BuildContext context) {
     final controller = context.watch<HomeController>();
 
     final transactions = filterTransactions(
-      controller.recentTransactions,
+      controller
+          // recent
+          .getAllTransactions(), // Use all transactions, not just recent 5
       controller.selectedPeriod,
     );
 
@@ -86,7 +115,34 @@ class _AllTransactionsPageState extends State<AllTransactionsPage> {
                           : index == transactions.length - 1
                           ? const EdgeInsets.fromLTRB(16, 0, 16, 8)
                           : const EdgeInsets.symmetric(horizontal: 16),
-                      child: RecentTransactionTile(transaction: tx),
+                      // child: RecentTransactionTile(transaction: tx),
+                      child: Dismissible(
+                        key: ValueKey(tx.id), // IMPORTANT: stable unique id
+                        direction: DismissDirection.endToStart,
+                        background: Container(
+                          alignment: Alignment.centerRight,
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          decoration: BoxDecoration(
+                            color: Colors.red.withOpacity(0.9),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: const Icon(Icons.delete, color: Colors.white),
+                        ),
+                        confirmDismiss: (_) async {
+                          return await _confirmDelete(context);
+                        },
+                        onDismissed: (_) {
+                          context.read<HomeController>().deleteTransaction(
+                            tx.id,
+                          );
+                        },
+                        child: RecentTransactionTile(
+                          transaction: tx,
+                          onTap: () {
+                            Get.toNamed(TRoutes.editTransaction, arguments: tx);
+                          },
+                        ),
+                      ),
                     );
                   },
                 ),

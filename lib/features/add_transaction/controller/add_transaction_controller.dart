@@ -5,12 +5,36 @@ import 'package:cointrail/data/repositories/transaction_repository.dart';
 import 'package:flutter/material.dart';
 
 class AddTransactionController extends ChangeNotifier {
-  AddTransactionController(this._repository, this._categoryRepository) {
+  AddTransactionController(
+    this._repository,
+    this._categoryRepository,
+    this.existingTransaction,
+  ) {
+    _init();
+
+    // loadCategories();
+  }
+  void _init() {
+    if (existingTransaction != null) {
+      final tx = existingTransaction!;
+
+      type = tx.type;
+      selectedDate = tx.date;
+      paymentMode = tx.paymentMode;
+      receiptPath = tx.receiptPath;
+
+      titleController.text = tx.title;
+      amountController.text = tx.amount.toStringAsFixed(0);
+      noteController.text = tx.note ?? '';
+    }
+
     loadCategories();
   }
 
   final TransactionRepository _repository;
   final CategoryRepository _categoryRepository;
+  final TransactionModel? existingTransaction;
+  bool get isEdit => existingTransaction != null;
 
   TransactionType type = TransactionType.income;
   bool get isIncome => type == TransactionType.income;
@@ -28,28 +52,43 @@ class AddTransactionController extends ChangeNotifier {
   String? receiptPath;
 
   // ───────── CATEGORY ─────────
-  Future<void> loadCategories() async {
-    print(
-      'AddTransactionController: Loading categories for isIncome=$isIncome',
-    );
+  // Future<void> loadCategories() async {
+  //   print(
+  //     'AddTransactionController: Loading categories for isIncome=$isIncome',
+  //   );
 
+  //   categories = isIncome
+  //       ? await _categoryRepository.getIncomeCategories()
+  //       : await _categoryRepository.getExpenseCategories();
+
+  //   print('AddTransactionController: Loaded ${categories.length} categories');
+  //   for (var category in categories) {
+  //     print(
+  //       '  - ${category.name} (${category.id}) isIncome=${category.isIncome}',
+  //     );
+  //   }
+
+  //   if (selectedCategory != null &&
+  //       !categories.any((c) => c.id == selectedCategory!.id)) {
+  //     selectedCategory = null;
+  //     print(
+  //       'AddTransactionController: Reset selectedCategory because it was not found',
+  //     );
+  //   }
+
+  //   notifyListeners();
+  // }
+
+  Future<void> loadCategories() async {
     categories = isIncome
         ? await _categoryRepository.getIncomeCategories()
         : await _categoryRepository.getExpenseCategories();
 
-    print('AddTransactionController: Loaded ${categories.length} categories');
-    for (var category in categories) {
-      print(
-        '  - ${category.name} (${category.id}) isIncome=${category.isIncome}',
-      );
-    }
-
-    if (selectedCategory != null &&
-        !categories.any((c) => c.id == selectedCategory!.id)) {
-      selectedCategory = null;
-      print(
-        'AddTransactionController: Reset selectedCategory because it was not found',
-      );
+    if (existingTransaction != null) {
+      selectedCategory = categories
+          .where((c) => c.name == existingTransaction!.category)
+          .cast<CategoryModel?>()
+          .firstOrNull;
     }
 
     notifyListeners();
@@ -100,7 +139,9 @@ class AddTransactionController extends ChangeNotifier {
     }
 
     final transaction = TransactionModel(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      id: isEdit
+          ? existingTransaction!.id
+          : DateTime.now().millisecondsSinceEpoch.toString(),
       title: titleController.text.trim(),
       type: type,
       amount: double.parse(amountController.text),

@@ -4,33 +4,28 @@ import 'package:cointrail/data/models/transaction_model.dart';
 class TransactionRepository {
   final _box = HiveBoxes.transactions();
 
-  // CREATE
+  /// CREATE / UPDATE
   Future<void> add(TransactionModel transaction) async {
     await _box.put(transaction.id, transaction);
   }
 
+  /// READ
   List<TransactionModel> getAllSorted() {
     final list = _box.values.toList();
-    list.sort((a, b) => b.date.compareTo(a.date)); // newest first
+    list.sort((a, b) => b.date.compareTo(a.date));
     return list;
   }
 
   List<TransactionModel> getRecent({int limit = 5}) {
-    final all = getAllSorted();
-    return all.take(limit).toList();
+    return getAllSorted().take(limit).toList();
   }
 
-  // // READ
-  // List<TransactionModel> getAll() {
-  //   return _box.values.toList()..sort((a, b) => b.date.compareTo(a.date));
-  // }
-
-  // DELETE
+  /// DELETE
   Future<void> delete(String id) async {
     await _box.delete(id);
   }
 
-  // CLEAR (optional)
+  /// CLEAR (optional)
   Future<void> clear() async {
     await _box.clear();
   }

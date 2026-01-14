@@ -10,32 +10,23 @@ import 'package:cointrail/data/repositories/transaction_repository.dart';
 import 'package:cointrail/data/repositories/user_repository.dart';
 import 'package:cointrail/data/sources/local/settings_hive_source.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 
 class HomeRepository {
   final _txRepo = TransactionRepository();
   final _userRepo = UserRepository();
   final _settingsRepo = SettingsHiveSource();
 
-  // ───────── USER ─────────
-  // Future<String> getUserName() async {
-  //   final user = await _userRepo.getCurrentUser();
-  //   debugPrint(
-  //     '🟢 Cached user → id: ${user?.id}, '
-  //     'email: ${user?.email}, '
-  //     'username: ${user?.username}',
-  //   );
+  // 🔹 DELETE
+  Future<void> deleteTransaction(String id) async {
+    await _txRepo.delete(id);
+  }
 
-  //   if (user?.username.isNotEmpty == true) {
-  //     debugPrint("📱 Home: Loaded from Firebase: ${user!.username}");
-  //     return user.username;
-  //   } else {
-  //     // Fall back to locally saved name
-  //     final savedName = await _settingsRepo.getUserName();
-  //     final result = savedName?.isNotEmpty == true ? savedName! : 'Guest';
-  //     debugPrint("💾 Home: Loaded from Hive: $result (savedName: $savedName)");
-  //     return result;
-  //   }
-  // }
+  // 🔹 SAVE / RESTORE (UNDO & edit)
+  Future<void> saveTransaction(TransactionModel tx) async {
+    await _txRepo.add(tx);
+  }
+
   Future<String> getUserName() async {
     final user = await _userRepo.getCurrentUser();
     logGreen(

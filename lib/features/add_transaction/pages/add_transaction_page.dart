@@ -24,15 +24,16 @@ class AddTransactionPage extends StatelessWidget {
       create: (_) => AddTransactionController(
         TransactionRepository(),
         CategoryRepository(),
+        null,
         // Add the missing third argument here based on your controller's constructor
       ),
-      child: const _AddTransactionView(),
+      child: const AddTransactionView(),
     );
   }
 }
 
-class _AddTransactionView extends StatelessWidget {
-  const _AddTransactionView();
+class AddTransactionView extends StatelessWidget {
+  const AddTransactionView();
 
   @override
   Widget build(BuildContext context) {

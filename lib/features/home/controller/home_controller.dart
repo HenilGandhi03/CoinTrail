@@ -18,6 +18,31 @@ class HomeController extends ChangeNotifier {
   late final StreamSubscription _settingsSub;
 
   late final StreamSubscription _userSub;
+  TransactionModel? _lastDeleted;
+
+  void deleteTransaction(String id) {
+    try {
+      _lastDeleted = _recentTransactions.firstWhere((t) => t.id == id);
+    } catch (e) {
+      _lastDeleted = null;
+    }
+    _repository.deleteTransaction(id);
+    _load();
+  }
+
+  void restoreTransaction(TransactionModel? tx) {
+    if (tx != null) {
+      _repository.saveTransaction(tx);
+      _load();
+    }
+  }
+
+  void restoreLastDeleted() {
+    if (_lastDeleted != null) {
+      restoreTransaction(_lastDeleted);
+      _lastDeleted = null;
+    }
+  }
 
   Future<void> _init() async {
     await _load();
