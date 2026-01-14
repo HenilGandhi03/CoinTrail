@@ -38,7 +38,7 @@ class SecurityPrivacySection extends StatelessWidget {
             icon: Icons.lock_outline,
             title: 'Change Password',
             onTap: () {
-              // Navigator.push(...)
+              controller.changePassword(context);
             },
           ),
 

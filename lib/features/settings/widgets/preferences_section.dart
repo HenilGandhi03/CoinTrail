@@ -38,14 +38,6 @@ class PreferencesSection extends StatelessWidget {
               const SizedBox(height: 16),
 
               _PreferenceTile(
-                icon: Icons.dark_mode_outlined,
-                title: 'Dark Mode',
-                subtitle: 'Switch to dark theme',
-                value: controller.isDarkMode,
-                onChanged: controller.toggleDarkMode,
-              ),
-
-              _PreferenceTile(
                 icon: Icons.notifications_outlined,
                 title: 'Push Notifications',
                 subtitle: 'Receive alerts and reminders',

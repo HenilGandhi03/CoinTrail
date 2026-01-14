@@ -33,3 +33,11 @@ _loadUser()
 notifyListeners()
 ↓
 HomeHeader rebuilds
+
+
+
+TODO: Edit and Delete Transaction / Categories 
+TODO: Add Month Filter in All Transaction
+TODO: Analysis Page 
+TODO: Add Scan Receipt
+TODO: Push Notification

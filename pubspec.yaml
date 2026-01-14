@@ -48,6 +48,11 @@ dependencies:
   build_runner: ^2.5.4
   image_picker: ^1.2.1
   firebase_storage: ^13.0.5
+  path_provider: ^2.1.5
+  csv: ^6.0.0
+  share_plus: ^12.0.1
+  pdf: ^3.11.3
+  printing: ^5.14.2
 
 
 dev_dependencies:
@@ -102,3 +107,6 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+  assets:
+    - assets/fonts/NotoSans-Regular.ttf
+    - assets/fonts/NotoSans-Bold.ttf

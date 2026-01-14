@@ -62,7 +62,7 @@ class SyncBackupSection extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            'Google Drive Backup',
+                            'Backup',
                             style: TextStyle(fontWeight: FontWeight.w600),
                           ),
                           const SizedBox(height: 4),
@@ -93,15 +93,19 @@ class SyncBackupSection extends StatelessWidget {
                 children: [
                   Expanded(
                     child: OutlinedButton(
-                      onPressed: controller.syncNow,
-                      child: const Text('Backup Now'),
+                      onPressed: controller.isSyncing
+                          ? null
+                          : controller.syncNow,
+                      child: const Text('Backup to Cloud'),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: OutlinedButton(
-                      onPressed: controller.syncNow,
-                      child: const Text('Sync Data'),
+                      onPressed: controller.isSyncing
+                          ? null
+                          : controller.restoreFromBackup,
+                      child: const Text('Restore Backup'),
                     ),
                   ),
                 ],

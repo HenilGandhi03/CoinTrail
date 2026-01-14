@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:io';
 import 'package:cointrail/common/widgets/logs.dart';
 import 'package:cointrail/data/models/category_model.dart';
+import 'package:cointrail/data/repositories/transaction_repository.dart';
 import 'package:cointrail/data/repositories/user_repository.dart';
+import 'package:cointrail/data/services/export_service.dart';
 import 'package:cointrail/data/sources/local/category_hive_source.dart';
 import 'package:cointrail/data/sources/local/settings_hive_source.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +15,7 @@ enum ExportType { csv, pdf }
 class SettingsController extends ChangeNotifier {
   final _userRepo = UserRepository();
   final _settingsHive = SettingsHiveSource();
+  final _txRepo = TransactionRepository();
 
   String fullName = 'Guest';
   String imageUrl = '';
@@ -20,6 +23,8 @@ class SettingsController extends ChangeNotifier {
 
   final nameController = TextEditingController();
   final budgetController = TextEditingController();
+  bool get isBackupConnected => _userRepo.isLoggedIn;
+
   Timer? _debounce;
   ThemeMode themeMode = ThemeMode.system;
   bool isDarkMode = false;
@@ -106,44 +111,25 @@ class SettingsController extends ChangeNotifier {
     isExporting = true;
     notifyListeners();
 
-    // 🔹 MOCK DELAY
-    await Future.delayed(const Duration(seconds: 1));
+    try {
+      final transactions = _txRepo.getAllSorted();
 
-    debugPrint('Exported data as ${type == ExportType.csv ? 'CSV' : 'PDF'}');
+      if (transactions.isEmpty) return;
 
-    isExporting = false;
-    notifyListeners();
-
-    // 🔹 LATER (real)
-    // - Generate CSV / PDF
-    // - Save to device
-    // - Share / download
+      if (type == ExportType.csv) {
+        await ExportService.exportCSV(transactions);
+      } else {
+        await ExportService.exportPDF(transactions);
+      }
+    } finally {
+      isExporting = false;
+      notifyListeners();
+    }
   }
 
-  bool isBackupConnected = true;
+  // bool isBackupConnected = true;
   bool isSyncing = false;
   DateTime? lastBackupTime = DateTime.now().subtract(const Duration(hours: 2));
-
-  Future<void> syncNow() async {
-    if (!isBackupConnected) return;
-
-    isSyncing = true;
-    notifyListeners();
-
-    // 🔹 MOCK SYNC DELAY
-    await Future.delayed(const Duration(seconds: 2));
-
-    lastBackupTime = DateTime.now();
-    isSyncing = false;
-    notifyListeners();
-
-    debugPrint('Backup completed');
-  }
-
-  void toggleBackupConnection() {
-    isBackupConnected = !isBackupConnected;
-    notifyListeners();
-  }
 
   String get lastBackupLabel {
     if (lastBackupTime == null) return 'Never backed up';
@@ -208,28 +194,80 @@ class SettingsController extends ChangeNotifier {
     // Firebase / OneSignal / FCM
   }
 
-  // Future<void> pickProfileImage() async {
-  //   final picker = ImagePicker();
+  Future<void> changePassword(BuildContext context) async {
+    try {
+      await _userRepo.sendPasswordReset();
 
-  //   final picked = await picker.pickImage(
-  //     source: ImageSource.gallery,
-  //     imageQuality: 75,
-  //   );
+      if (!context.mounted) return;
 
-  //   if (picked == null) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Password reset email sent')),
+      );
+    } catch (e) {
+      if (!context.mounted) return;
 
-  //   final file = File(picked.path);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to send reset email')));
+    }
+  }
 
-  //   // Instant UI feedback (optional)
-  //   imageUrl = picked.path;
-  //   notifyListeners();
+  Future<void> syncNow() async {
+    if (isSyncing) return;
 
-  //   // Persist
-  //   await _userRepo.updateUserImage(file);
+    isSyncing = true;
+    notifyListeners();
 
-  //   // Reload from Hive (final URL)
-  //   await _loadUser();
-  // }
+    try {
+      final user = await _userRepo.getCurrentUser();
+      if (user == null) return;
+
+      final categories = await _categoryHive.getAll();
+      final settings = {'monthlyBudget': monthlyBudget, 'darkMode': isDarkMode};
+
+      final payload = {
+        'user': user.toMap(),
+        'categories': categories.map((e) => e.toMap()).toList(),
+        'settings': settings,
+        'updatedAt': DateTime.now().toIso8601String(),
+      };
+
+      await _userRepo.uploadBackup(payload);
+
+      lastBackupTime = DateTime.now();
+    } finally {
+      isSyncing = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> restoreFromBackup() async {
+    isSyncing = true;
+    notifyListeners();
+
+    try {
+      final data = await _userRepo.downloadBackup();
+      if (data == null) return;
+
+      // Restore user
+      await _userRepo.restoreUser(data['user']);
+
+      // Restore categories
+      await _categoryHive.clear();
+      for (final c in data['categories']) {
+        await _categoryHive.save(CategoryModel.fromMap(c));
+      }
+
+      // Restore settings
+      monthlyBudget = data['settings']['monthlyBudget'] ?? monthlyBudget;
+      await _settingsHive.saveBudget(monthlyBudget);
+
+      lastBackupTime = DateTime.parse(data['updatedAt']);
+    } finally {
+      isSyncing = false;
+      notifyListeners();
+    }
+  }
 
   final _picker = ImagePicker();
 

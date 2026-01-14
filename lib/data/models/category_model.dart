@@ -1,21 +1,3 @@
-// import 'package:flutter/material.dart';
-
-// class CategoryModel {
-//   final String id;
-//   final String name;
-//   final IconData icon;
-//   final Color color;
-//   final bool isIncome;
-
-//   const CategoryModel({
-//     required this.id,
-//     required this.name,
-//     required this.icon,
-//     required this.color,
-//     this.isIncome = false,
-//   });
-// }
-
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
@@ -37,9 +19,9 @@ class CategoryModel {
 
   @HiveField(4)
   final bool isIncome;
-  
+
   @HiveField(5)
-  final bool isSystem; 
+  final bool isSystem;
 
   // ✅ Hive-compatible constructor
   CategoryModel({
@@ -73,6 +55,28 @@ class CategoryModel {
       colorValue: color.toARGB32(),
       isIncome: isIncome,
       isSystem: isSystem,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'iconCode': iconCode,
+      'colorValue': colorValue,
+      'isIncome': isIncome,
+      'isSystem': isSystem,
+    };
+  }
+
+  factory CategoryModel.fromMap(Map<String, dynamic> map) {
+    return CategoryModel(
+      id: map['id'],
+      name: map['name'],
+      iconCode: map['iconCode'],
+      colorValue: map['colorValue'],
+      isIncome: map['isIncome'] ?? false,
+      isSystem: map['isSystem'] ?? false,
     );
   }
 }

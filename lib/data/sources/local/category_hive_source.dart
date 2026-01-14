@@ -34,6 +34,11 @@ class CategoryHiveSource {
     await box.delete(id);
   }
 
+  Future<void> clear() async {
+    final box = await _box();
+    await box.clear();
+  }
+
   Future<void> seedSystemCategories() async {
     final box = await _box();
 
