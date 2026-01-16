@@ -65,7 +65,7 @@ class _HomeBalanceCarouselState extends State<HomeBalanceCarousel> {
         // Slick Segmented Line Indicator (Tap + Swipe Sync)
         // --------------------------------------------------
         SizedBox(
-          width: 24.0 * itemCount, // 👈 auto scale
+          width: 24.0 * itemCount,
           height: 6,
           child: Row(
             children: List.generate(

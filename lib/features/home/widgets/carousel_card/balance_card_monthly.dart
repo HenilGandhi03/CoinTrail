@@ -26,7 +26,7 @@ class BalanceCardMonthly extends StatelessWidget {
           _MonthlyHeader(),
 
           Text(
-            '\$${summary.totalSpent.toStringAsFixed(0)}',
+            '\₹${summary.totalSpent.toStringAsFixed(0)}',
             style: Theme.of(context).textTheme.displaySmall?.copyWith(
               color: colors.onPrimary,
               fontWeight: FontWeight.bold,
@@ -37,11 +37,11 @@ class BalanceCardMonthly extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Budget: \$${summary.budget.toStringAsFixed(0)}',
+                'Budget: \₹${summary.budget.toStringAsFixed(0)}',
                 style: TextStyle(color: colors.onPrimary.withOpacity(0.8)),
               ),
               Text(
-                'Remaining: \$${summary.remaining.toStringAsFixed(0)}',
+                'Remaining: \₹${summary.remaining.toStringAsFixed(0)}',
                 style: TextStyle(color: colors.onPrimary.withOpacity(0.8)),
               ),
             ],

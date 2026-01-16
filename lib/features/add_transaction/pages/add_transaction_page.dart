@@ -7,7 +7,7 @@ import 'package:cointrail/features/add_transaction/widgets/category/category_sel
 import 'package:cointrail/features/add_transaction/widgets/date_picker.dart';
 import 'package:cointrail/features/add_transaction/widgets/income_expense_toggle.dart';
 import 'package:cointrail/features/add_transaction/widgets/input_field.dart';
-import 'package:cointrail/features/add_transaction/widgets/payment_mode_selector.dart';
+import 'package:cointrail/features/add_transaction/widgets/payment_mode_field.dart';
 import 'package:cointrail/features/add_transaction/widgets/scan_receipt_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -25,7 +25,6 @@ class AddTransactionPage extends StatelessWidget {
         TransactionRepository(),
         CategoryRepository(),
         null,
-        // Add the missing third argument here based on your controller's constructor
       ),
       child: const AddTransactionView(),
     );
@@ -47,7 +46,7 @@ class AddTransactionView extends StatelessWidget {
           slivers: [
             // AppHeader is already a sliver, don't wrap it in SliverToBoxAdapter
             AppHeader(
-              title: 'Add Transaction',
+              title: controller.isEdit ? 'Edit Transaction' : 'Add Transaction',
               showBack: true,
 
               bottom_analysis: DatePicker(controller: controller),
@@ -103,18 +102,13 @@ class AddTransactionView extends StatelessWidget {
                         Expanded(
                           child: ScanReceiptField(
                             receiptPath: controller.receiptPath,
-                            onTap: () {
-                              controller.setReceipt('mock/receipt/path.jpg');
-                            },
+                            onTap: controller.pickReceipt,
                           ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
-                          child: PaymentModeField(
-                            selected: controller.paymentMode,
-                            onTap: () {
-                              // navigate to payment mode page
-                            },
+                          child: PaymentModeInputField(
+                            controller: controller.paymentModeController,
                           ),
                         ),
                       ],

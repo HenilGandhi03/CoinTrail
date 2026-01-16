@@ -6,9 +6,7 @@ import 'package:cointrail/features/edit_transaction/pages/edit_transaction_page.
 import 'package:cointrail/features/home/controller/home_controller.dart';
 import 'package:cointrail/features/home/screens/all_transactions_page.dart';
 import 'package:cointrail/features/root/root_page.dart';
-// import 'package:cointrail/fesatures/settings/widgets/common/add_category_sheet.dart';
 import 'package:cointrail/routes/routes.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:provider/provider.dart';
 

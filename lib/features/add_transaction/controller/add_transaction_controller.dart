@@ -1,8 +1,10 @@
+import 'package:cointrail/app/navigator_key.dart';
 import 'package:cointrail/data/models/category_model.dart';
 import 'package:cointrail/data/models/transaction_model.dart';
 import 'package:cointrail/data/repositories/category_repository.dart';
 import 'package:cointrail/data/repositories/transaction_repository.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class AddTransactionController extends ChangeNotifier {
   AddTransactionController(
@@ -11,8 +13,6 @@ class AddTransactionController extends ChangeNotifier {
     this.existingTransaction,
   ) {
     _init();
-
-    // loadCategories();
   }
   void _init() {
     if (existingTransaction != null) {
@@ -21,6 +21,7 @@ class AddTransactionController extends ChangeNotifier {
       type = tx.type;
       selectedDate = tx.date;
       paymentMode = tx.paymentMode;
+      paymentModeController.text = _paymentModeToText(tx.paymentMode);
       receiptPath = tx.receiptPath;
 
       titleController.text = tx.title;
@@ -30,6 +31,10 @@ class AddTransactionController extends ChangeNotifier {
 
     loadCategories();
   }
+
+  final TextEditingController paymentModeController = TextEditingController(
+    text: 'Cash',
+  );
 
   final TransactionRepository _repository;
   final CategoryRepository _categoryRepository;
@@ -50,34 +55,44 @@ class AddTransactionController extends ChangeNotifier {
   final noteController = TextEditingController();
 
   String? receiptPath;
+  final ImagePicker _picker = ImagePicker();
 
-  // ───────── CATEGORY ─────────
-  // Future<void> loadCategories() async {
-  //   print(
-  //     'AddTransactionController: Loading categories for isIncome=$isIncome',
-  //   );
+  Future<void> pickReceipt() async {
+    final source = await showModalBottomSheet<ImageSource>(
+      context: navigatorKey.currentContext!, // explained below
+      builder: (context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('Camera'),
+                onTap: () => Navigator.pop(context, ImageSource.camera),
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Gallery'),
+                onTap: () => Navigator.pop(context, ImageSource.gallery),
+              ),
+            ],
+          ),
+        );
+      },
+    );
 
-  //   categories = isIncome
-  //       ? await _categoryRepository.getIncomeCategories()
-  //       : await _categoryRepository.getExpenseCategories();
+    if (source == null) return;
 
-  //   print('AddTransactionController: Loaded ${categories.length} categories');
-  //   for (var category in categories) {
-  //     print(
-  //       '  - ${category.name} (${category.id}) isIncome=${category.isIncome}',
-  //     );
-  //   }
+    final XFile? image = await _picker.pickImage(
+      source: source,
+      imageQuality: 80,
+    );
 
-  //   if (selectedCategory != null &&
-  //       !categories.any((c) => c.id == selectedCategory!.id)) {
-  //     selectedCategory = null;
-  //     print(
-  //       'AddTransactionController: Reset selectedCategory because it was not found',
-  //     );
-  //   }
-
-  //   notifyListeners();
-  // }
+    if (image != null) {
+      receiptPath = image.path;
+      notifyListeners();
+    }
+  }
 
   Future<void> loadCategories() async {
     categories = isIncome
@@ -137,6 +152,7 @@ class AddTransactionController extends ChangeNotifier {
         selectedCategory == null) {
       throw Exception('Missing required fields');
     }
+    paymentMode = _parsePaymentMode(paymentModeController.text);
 
     final transaction = TransactionModel(
       id: isEdit
@@ -161,5 +177,33 @@ class AddTransactionController extends ChangeNotifier {
     amountController.dispose();
     noteController.dispose();
     super.dispose();
+  }
+}
+
+PaymentMode _parsePaymentMode(String text) {
+  switch (text.trim().toLowerCase()) {
+    case 'upi':
+      return PaymentMode.upi;
+    case 'card':
+      return PaymentMode.card;
+    case 'bank':
+      return PaymentMode.bank;
+    case 'cash':
+    default:
+      return PaymentMode.cash;
+  }
+}
+
+String _paymentModeToText(PaymentMode mode) {
+  switch (mode) {
+    case PaymentMode.upi:
+      return 'UPI';
+    case PaymentMode.card:
+      return 'Card';
+    case PaymentMode.bank:
+      return 'Bank';
+    case PaymentMode.cash:
+    default:
+      return 'Cash';
   }
 }

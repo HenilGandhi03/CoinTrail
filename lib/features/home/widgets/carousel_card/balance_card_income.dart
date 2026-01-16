@@ -24,7 +24,7 @@ class BalanceCardIncome extends StatelessWidget {
           const _IncomeHeader(),
 
           Text(
-            '\$${income.totalIncome.toStringAsFixed(0)}',
+            '\₹${income.totalIncome.toStringAsFixed(0)}',
             style: Theme.of(context).textTheme.displaySmall?.copyWith(
               color: colors.onPrimary,
               fontWeight: FontWeight.bold,

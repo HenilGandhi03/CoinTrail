@@ -11,6 +11,7 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   await HiveService.init();
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   // Seed default categories and debug
   final categorySource = CategoryHiveSource();

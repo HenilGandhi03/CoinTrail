@@ -1,3 +1,4 @@
+import 'package:cointrail/app/navigator_key.dart';
 import 'package:cointrail/core_utils/theme/theme.dart';
 import 'package:cointrail/features/authentication/screens/splash/splash_onboarding_screen.dart';
 import 'package:cointrail/routes/app_routes.dart';
@@ -10,6 +11,8 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      navigatorKey: navigatorKey,
+
       /// -- README(Docs[3]) -- Bindings
       title: "Starter Template",
       // initialBinding: GeneralBindings(),

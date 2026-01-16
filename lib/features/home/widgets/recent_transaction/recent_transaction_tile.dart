@@ -7,11 +7,13 @@ import 'package:flutter/material.dart';
 class RecentTransactionTile extends StatelessWidget {
   final TransactionModel transaction;
   final VoidCallback? onTap;
+  final bool showDate;
 
   const RecentTransactionTile({
     super.key,
     required this.transaction,
     this.onTap,
+    this.showDate = true,
   });
 
   @override
@@ -24,7 +26,10 @@ class RecentTransactionTile extends StatelessWidget {
       borderRadius: BorderRadius.circular(12),
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: TSizes.sm, horizontal: 4),
+        padding: const EdgeInsets.symmetric(
+          vertical: TSizes.sm,
+          horizontal: 12,
+        ),
         child: Row(
           children: [
             // ----------------------------------
@@ -65,7 +70,9 @@ class RecentTransactionTile extends StatelessWidget {
                       CategoryChip(label: transaction.category),
                       const SizedBox(width: 8),
                       Text(
-                        transaction.formattedDate,
+                        showDate
+                            ? transaction.formattedDate
+                            : transaction.paymentMode.name.toUpperCase(),
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: colors.onSurface.withOpacity(0.55),
                         ),

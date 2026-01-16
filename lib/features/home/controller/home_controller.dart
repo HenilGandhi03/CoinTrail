@@ -16,9 +16,11 @@ class HomeController extends ChangeNotifier {
   MonthlySummaryModel? _monthlySummary;
   ExpenseSummaryModel? _expenseSummary;
   late final StreamSubscription _settingsSub;
-
   late final StreamSubscription _userSub;
   TransactionModel? _lastDeleted;
+  TransactionPeriod selectedPeriod = TransactionPeriod.all;
+
+  DateTime selectedMonth = DateTime.now();
 
   void deleteTransaction(String id) {
     try {
@@ -42,6 +44,21 @@ class HomeController extends ChangeNotifier {
       restoreTransaction(_lastDeleted);
       _lastDeleted = null;
     }
+  }
+
+  void updateMonth(DateTime month) {
+    selectedMonth = DateTime(month.year, month.month);
+    notifyListeners();
+  }
+
+  void nextMonth() {
+    selectedMonth = DateTime(selectedMonth.year, selectedMonth.month + 1);
+    notifyListeners();
+  }
+
+  void previousMonth() {
+    selectedMonth = DateTime(selectedMonth.year, selectedMonth.month - 1);
+    notifyListeners();
   }
 
   Future<void> _init() async {
@@ -107,8 +124,6 @@ class HomeController extends ChangeNotifier {
         budget: 0,
         progress: 0,
       );
-
-  var selectedPeriod = TransactionPeriod.daily;
 
   late final StreamSubscription _hiveSubscription;
   StreamSubscription? _settingsSubscription;

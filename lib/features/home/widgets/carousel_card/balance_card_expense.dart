@@ -25,7 +25,7 @@ class BalanceCardExpense extends StatelessWidget {
           const _ExpenseHeader(),
 
           Text(
-            '\$${expense.totalExpense.toStringAsFixed(0)}',
+            '\₹${expense.totalExpense.toStringAsFixed(0)}',
             style: Theme.of(context).textTheme.displaySmall?.copyWith(
               color: colors.onPrimary,
               fontWeight: FontWeight.bold,
@@ -40,7 +40,7 @@ class BalanceCardExpense extends StatelessWidget {
                 style: TextStyle(color: colors.onPrimary.withOpacity(0.8)),
               ),
               Text(
-                'Today: \$${expense.today.toStringAsFixed(0)}',
+                'Today: \₹${expense.today.toStringAsFixed(0)}',
                 style: TextStyle(color: colors.onPrimary.withOpacity(0.8)),
               ),
             ],

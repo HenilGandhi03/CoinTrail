@@ -19,7 +19,12 @@ class HorizontalHeader extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
 
     return Container(
-      padding: const EdgeInsets.all(4), // Add padding around the segments
+      padding: const EdgeInsets.fromLTRB(
+        8,
+        8,
+        0,
+        8,
+      ), // Add padding around the segments
       decoration: BoxDecoration(
         color: colors.surface,
         borderRadius: BorderRadius.circular(12),
@@ -73,7 +78,7 @@ class _Segment extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 00),
         // curve: Curves.easeInOut,
-        padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 33, vertical: 10),
         decoration: BoxDecoration(
           color: isSelected ? colors.primary : colors.surface,
           borderRadius: BorderRadius.circular(10),
