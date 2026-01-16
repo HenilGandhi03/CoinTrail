@@ -1,13 +1,14 @@
+import 'package:cointrail/features/authentication/widgets/auth_buttons.dart';
+import 'package:cointrail/features/authentication/widgets/welcome_content.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-import 'package:cointrail/common/buttons/primary_button.dart';
 import 'package:cointrail/core_utils/constants/text_strings.dart';
 import 'package:cointrail/core_utils/constants/sizes.dart';
 import 'package:cointrail/features/authentication/controller/splash_navigation_controller.dart';
 import 'package:cointrail/features/authentication/screens/splash/splash_circle.dart';
 import 'package:cointrail/features/authentication/screens/splash/splash_controller.dart';
-import 'package:cointrail/routes/routes.dart';
 
 class SplashOnboardingScreen extends StatefulWidget {
   const SplashOnboardingScreen({super.key});
@@ -15,6 +16,7 @@ class SplashOnboardingScreen extends StatefulWidget {
   @override
   State<SplashOnboardingScreen> createState() => _SplashOnboardingScreenState();
 }
+// final bool isLoggedIn = navController.isLoggedIn;
 
 class _SplashOnboardingScreenState extends State<SplashOnboardingScreen>
     with SingleTickerProviderStateMixin {
@@ -49,6 +51,7 @@ class _SplashOnboardingScreenState extends State<SplashOnboardingScreen>
       builder: (context, _) {
         final bool isFloodFill =
             splash.circleRadius.value >= TTexts.expandedRadius;
+        final bool isLoggedIn = FirebaseAuth.instance.currentUser != null;
 
         return Scaffold(
           backgroundColor: colors.secondary,
@@ -74,7 +77,7 @@ class _SplashOnboardingScreenState extends State<SplashOnboardingScreen>
                 ),
               ),
 
-              /// CTA buttons (only visible after animation)
+              /// CTA buttons or welcome message (only visible after animation)
               Positioned(
                 left: 0,
                 right: 0,
@@ -83,23 +86,9 @@ class _SplashOnboardingScreenState extends State<SplashOnboardingScreen>
                   opacity: splash.buttonsOpacity.value,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: TSizes.lg),
-                    child: Column(
-                      children: [
-                        TPrimaryButton(
-                          text: TTexts.signUp,
-                          onPressed: () {
-                            Get.toNamed(TRoutes.register);
-                          },
-                        ),
-                        const SizedBox(height: TSizes.sm),
-                        TPrimaryButton(
-                          text: TTexts.login,
-                          onPressed: () {
-                            Get.toNamed(TRoutes.login);
-                          },
-                        ),
-                      ],
-                    ),
+                    child: isLoggedIn
+                        ? WelcomeContent(theme: theme, colors: colors)
+                        : const AuthButtons(),
                   ),
                 ),
               ),
