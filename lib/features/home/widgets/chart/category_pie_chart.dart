@@ -4,7 +4,7 @@ import '../../controller/home_controller.dart';
 import 'package:provider/provider.dart';
 
 class CategoryPieChart extends StatelessWidget {
-  const CategoryPieChart({super.key});
+  const CategoryPieChart({super.key, required bool showCenterLabel, required String centerLabel});
 
   @override
   Widget build(BuildContext context) {

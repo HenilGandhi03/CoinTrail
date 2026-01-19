@@ -203,7 +203,6 @@ String _paymentModeToText(PaymentMode mode) {
     case PaymentMode.bank:
       return 'Bank';
     case PaymentMode.cash:
-    default:
       return 'Cash';
   }
 }

@@ -153,7 +153,7 @@ class _AppHeaderDelegate extends SliverPersistentHeaderDelegate {
     if (bottom_alltx != null) height += 0;
 
     // Add height for each pinned widget
-    if (pinnedWidgets.isNotEmpty) height += 60 * pinnedWidgets.length;
+    if (pinnedWidgets.isNotEmpty) height += 20 * pinnedWidgets.length;
 
     // Add height for each scrollable widget
     if (scrollableWidgets.isNotEmpty) height += 60 * scrollableWidgets.length;
@@ -293,6 +293,24 @@ class _AppHeaderDelegate extends SliverPersistentHeaderDelegate {
             ),
           ),
 
+          // ───────── PINNED WIDGETS (Stay in green area) ─────────
+          if (pinnedWidgets.isNotEmpty)
+            Positioned(
+              top: 70 + statusBar, // Position below title row
+              left: TSizes.sm,
+              right: TSizes.sm,
+              child: Column(
+                children: pinnedWidgets
+                    .map(
+                      (widget) => Padding(
+                        padding: const EdgeInsets.only(bottom: TSizes.sm),
+                        child: widget,
+                      ),
+                    )
+                    .toList(),
+              ),
+            ),
+
           // ───────── SCROLLABLE CONTENT (Moves up when scrolling) ─────────
           Positioned(
             top: 50 + statusBar, // Position below title row
@@ -346,19 +364,6 @@ class _AppHeaderDelegate extends SliverPersistentHeaderDelegate {
                       const SizedBox(height: TSizes.xxxl),
                       bottom_alltx!,
                     ],
-
-                    // Pinned widgets (fade slower - only 50% max fade)
-                    // These stay visible longer than scrollable content
-                    ...pinnedWidgets.map(
-                      (widget) => Padding(
-                        padding: const EdgeInsets.only(top: TSizes.sm),
-                        child: Opacity(
-                          // Only fade to 50% opacity maximum
-                          opacity: (1.0 - progress * 0.5).clamp(0.0, 1.0),
-                          child: widget,
-                        ),
-                      ),
-                    ),
 
                     // Scrollable widgets (fade completely)
                     // These disappear as you scroll
