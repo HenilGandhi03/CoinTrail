@@ -1,5 +1,6 @@
 import 'package:cointrail/app/navigator_key.dart';
 import 'package:cointrail/data/models/category_model.dart';
+import 'package:cointrail/data/models/pending_transaction_model.dart';
 import 'package:cointrail/data/models/transaction_model.dart';
 import 'package:cointrail/data/repositories/category_repository.dart';
 import 'package:cointrail/data/repositories/transaction_repository.dart';
@@ -28,6 +29,21 @@ class AddTransactionController extends ChangeNotifier {
       amountController.text = tx.amount.toStringAsFixed(0);
       noteController.text = tx.note ?? '';
     }
+
+    loadCategories();
+  }
+
+  AddTransactionController.fromPending(
+    this._repository,
+    this._categoryRepository,
+    PendingTransaction pending,
+  ) : existingTransaction = null {
+    type = pending.type;
+    selectedDate = pending.date;
+    paymentMode = pending.paymentMode;
+    paymentModeController.text = _paymentModeToText(pending.paymentMode);
+    titleController.text = pending.title;
+    amountController.text = pending.amount.toStringAsFixed(0);
 
     loadCategories();
   }

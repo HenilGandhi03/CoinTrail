@@ -1,3 +1,6 @@
+import 'package:cointrail/data/models/activity_log_model.dart';
+import 'package:cointrail/data/models/app_notification_model.dart';
+import 'package:cointrail/data/models/pending_transaction_model.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../models/category_model.dart';
 import '../models/transaction_model.dart';
@@ -12,11 +15,17 @@ class HiveService {
       ..registerAdapter(TransactionTypeAdapter())
       ..registerAdapter(PaymentModeAdapter())
       ..registerAdapter(TransactionModelAdapter())
-      ..registerAdapter(UserModelAdapter());
+      ..registerAdapter(UserModelAdapter())
+      ..registerAdapter(PendingTransactionAdapter())
+      ..registerAdapter(ActivityLogAdapter())
+      ..registerAdapter(AppNotificationAdapter());
 
     await Hive.openBox<CategoryModel>('categories');
     await Hive.openBox<TransactionModel>('transactions');
     await Hive.openBox<UserModel>('userBox');
+    await Hive.openBox<PendingTransaction>('pending_transactions');
+    await Hive.openBox<ActivityLog>('activity_logs');
+    await Hive.openBox<AppNotification>('notifications');
   }
 
   // Enhanced debugging method

@@ -1,6 +1,9 @@
 import 'package:cointrail/common/header/appHeader.dart';
 import 'package:cointrail/features/home/widgets/carousel_card/home_balance_carousel.dart';
+import 'package:cointrail/routes/routes.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:provider/provider.dart';
 
 import 'package:cointrail/features/home/controller/home_controller.dart';
@@ -19,7 +22,7 @@ class HomeHeader extends StatelessWidget {
       showNotification: true,
       home_carousel: HomeBalanceCarousel(),
       onNotificationTap: () async {
-        // TODO: navigate to notifications
+        Get.toNamed(TRoutes.inbox);
       },
     );
   }

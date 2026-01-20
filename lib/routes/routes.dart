@@ -17,4 +17,5 @@ class TRoutes {
   // static const addCategory = '/add_category';
   static const hiveDebugLogs = '/hive_debug_logs';
   static const editTransaction = '/edit-transaction';
+  static const inbox = '/inbox';
 }
