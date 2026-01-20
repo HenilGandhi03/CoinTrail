@@ -1,218 +1,60 @@
 import 'package:cointrail/core_utils/constants/sizes.dart';
-import 'package:cointrail/data/models/transaction_model.dart';
+import 'package:cointrail/data/models/category_spending_model.dart';
 import 'package:cointrail/features/analysis/controller/analysis_controller.dart';
-import 'package:cointrail/features/home/widgets/chart/category_pie_chart.dart';
+import 'package:cointrail/features/analysis/widgets/chart/category_pie_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class SpendingByCategorySection extends StatefulWidget {
+class SpendingByCategorySection extends StatelessWidget {
   const SpendingByCategorySection({super.key});
 
   @override
-  State<SpendingByCategorySection> createState() =>
-      _SpendingByCategorySectionState();
-}
-
-class _SpendingByCategorySectionState extends State<SpendingByCategorySection> {
-  TransactionType selectedType = TransactionType.expense;
-
-  @override
   Widget build(BuildContext context) {
-    final analysisController = context.watch<AnalysisController>();
+    final controller = context.watch<AnalysisController>();
 
-    // Get categories based on selected type
-    final categories = selectedType == TransactionType.income
-        ? analysisController.incomeCategories
-        : analysisController.expenseCategories;
-
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: TSizes.lg),
-      // padding: const EdgeInsets.all(TSizes.lg),
-      // decoration: BoxDecoration(
-      //   color: colors.surface,
-      //   borderRadius: BorderRadius.circular(TSizes.cardRadiusLg),
-      //   border: Border.all(color: colors.outlineVariant),
-      // ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: TSizes.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ───────── HEADER ─────────
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                '${selectedType == TransactionType.income ? 'Income' : 'Expense'} Overview',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              Icon(
-                Icons.keyboard_arrow_down_rounded,
-                color: colors.onSurfaceVariant,
-              ),
-            ],
+          /// 🔴 EXPENSE SECTION
+          _CategoryBlock(
+            title: 'Expense Categories',
+            emptyText: 'No expenses in this period',
+            isIncome: false,
+            categories: controller.expenseCategories,
+            centerLabel: 'Expenses',
           ),
 
-          const SizedBox(height: TSizes.lg),
+          const SizedBox(height: TSizes.xxl),
 
-          // ───────── TOGGLE PILLS ─────────
-          Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: colors.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(TSizes.sm),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: _TogglePill(
-                    label: 'Income',
-                    icon: Icons.trending_up,
-                    isSelected: selectedType == TransactionType.income,
-                    onTap: () {
-                      setState(() => selectedType = TransactionType.income);
-                      analysisController.updateCategoriesForType(true);
-                    },
-                  ),
-                ),
-                Expanded(
-                  child: _TogglePill(
-                    label: 'Expense',
-                    icon: Icons.trending_down,
-                    isSelected: selectedType == TransactionType.expense,
-                    onTap: () {
-                      setState(() => selectedType = TransactionType.expense);
-                      analysisController.updateCategoriesForType(false);
-                    },
-                  ),
-                ),
-              ],
-            ),
+          /// 🟢 INCOME SECTION
+          _CategoryBlock(
+            title: 'Income Categories',
+            emptyText: 'No income in this period',
+            isIncome: true,
+            categories: controller.incomeCategories,
+            centerLabel: 'Income',
           ),
-
-          const SizedBox(height: TSizes.lg),
-
-          // ───────── PIE + LEGEND ─────────
-          if (categories.isEmpty)
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.all(40),
-                child: Column(
-                  children: [
-                    Icon(
-                      selectedType == TransactionType.income
-                          ? Icons.trending_up
-                          : Icons.trending_down,
-                      size: 48,
-                      color: colors.onSurfaceVariant,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'No ${selectedType == TransactionType.income ? 'income' : 'expense'} data',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        color: colors.onSurfaceVariant,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Add some ${selectedType == TransactionType.income ? 'income' : 'expenses'} to see the breakdown',
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: colors.onSurfaceVariant,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
-            )
-          else
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Donut Chart
-                SizedBox(
-                  width: 160,
-                  height: 160,
-                  child: CategoryPieChart(
-                    showCenterLabel: true,
-                    centerLabel: selectedType == TransactionType.income
-                        ? 'Income'
-                        : 'Expenses',
-                  ),
-                ),
-
-                const SizedBox(width: TSizes.lg),
-
-                // Legend
-                Expanded(
-                  child: Column(
-                    children: categories.map<Widget>((c) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 6),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 12,
-                              height: 12,
-                              decoration: BoxDecoration(
-                                color: c.color,
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                c.name,
-                                style: theme.textTheme.bodyMedium,
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ),
-              ],
-            ),
-
-          const SizedBox(height: TSizes.lg),
-
-          if (categories.isNotEmpty) ...[
-            Divider(color: colors.outlineVariant),
-
-            // ───────── CATEGORY BREAKDOWN ─────────
-            Column(
-              children: categories.map<Widget>((c) {
-                return _CategoryProgressRow(
-                  name: c.name,
-                  amount: c.amount,
-                  percent: c.percentage,
-                  color: c.color,
-                  isIncome: selectedType == TransactionType.income,
-                );
-              }).toList(),
-            ),
-          ],
         ],
       ),
     );
   }
 }
 
-class _TogglePill extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  final bool isSelected;
-  final VoidCallback onTap;
+class _CategoryBlock extends StatelessWidget {
+  final String title;
+  final String emptyText;
+  final bool isIncome;
+  final String centerLabel;
+  final List<CategorySpendingModel> categories;
 
-  const _TogglePill({
-    required this.label,
-    required this.icon,
-    required this.isSelected,
-    required this.onTap,
+  const _CategoryBlock({
+    required this.title,
+    required this.emptyText,
+    required this.isIncome,
+    required this.centerLabel,
+    required this.categories,
   });
 
   @override
@@ -220,35 +62,114 @@ class _TogglePill extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
 
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        width: double.infinity,
-        margin: const EdgeInsets.all(4),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: isSelected ? colors.primary : Colors.transparent,
-          borderRadius: BorderRadius.circular(TSizes.xs),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        /// SECTION TITLE
+        Text(
+          title,
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              size: 18,
-              color: isSelected ? colors.onPrimary : colors.onSurfaceVariant,
-            ),
-            const SizedBox(width: 8),
-            Text(
-              label,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: isSelected ? colors.onPrimary : colors.onSurfaceVariant,
-                fontWeight: FontWeight.w600,
+
+        const SizedBox(height: TSizes.lg),
+
+        if (categories.isEmpty)
+          _EmptyState(
+            icon: isIncome ? Icons.trending_up : Icons.trending_down,
+            text: emptyText,
+          )
+        else ...[
+          /// PIE + LEGEND
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                width: 160,
+                height: 160,
+                child: CategoryPieChart(
+                  data: categories,
+                  showCenterLabel: true,
+                  centerLabel: centerLabel,
+                  centerColor: isIncome
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).colorScheme.error,
+                ),
               ),
-            ),
-          ],
-        ),
+
+              const SizedBox(width: TSizes.lg),
+
+              Expanded(
+                child: Column(
+                  children: categories.map((c) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 6),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 10,
+                            height: 10,
+                            decoration: BoxDecoration(
+                              color: c.color,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(child: Text(c.name)),
+                          Text('${c.percentage}%'),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: TSizes.lg),
+          Divider(color: colors.outlineVariant),
+
+          /// CATEGORY BREAKDOWN
+          ...categories.map((c) {
+            return _CategoryProgressRow(
+              name: c.name,
+              amount: c.amount,
+              percent: c.percentage,
+              color: c.color,
+              isIncome: isIncome,
+            );
+          }),
+        ],
+      ],
+    );
+  }
+}
+
+class _EmptyState extends StatelessWidget {
+  final IconData icon;
+  final String text;
+
+  const _EmptyState({required this.icon, required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
+    return Padding(
+      padding: const EdgeInsets.all(32),
+      child: Column(
+        children: [
+          Icon(icon, size: 48, color: colors.onSurfaceVariant),
+          const SizedBox(height: 12),
+          Text(
+            text,
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
+            textAlign: TextAlign.center,
+          ),
+        ],
       ),
     );
   }
@@ -271,14 +192,12 @@ class _CategoryProgressRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Row(
         children: [
-          // Icon
           Container(
             width: 40,
             height: 40,
@@ -288,29 +207,19 @@ class _CategoryProgressRow extends StatelessWidget {
             ),
             child: Icon(Icons.category, color: color, size: 20),
           ),
-
           const SizedBox(width: 12),
 
-          // Name + bar
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  name,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+                Text(name, style: const TextStyle(fontWeight: FontWeight.w600)),
                 const SizedBox(height: 6),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: LinearProgressIndicator(
-                    value: percent / 100,
-                    minHeight: 6,
-                    backgroundColor: colors.surfaceContainerHighest,
-                    valueColor: AlwaysStoppedAnimation(color),
-                  ),
+                LinearProgressIndicator(
+                  value: percent / 100,
+                  minHeight: 6,
+                  backgroundColor: colors.surfaceContainerHighest,
+                  valueColor: AlwaysStoppedAnimation(color),
                 ),
               ],
             ),
@@ -318,24 +227,17 @@ class _CategoryProgressRow extends StatelessWidget {
 
           const SizedBox(width: 12),
 
-          // Amount + %
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
                 '${isIncome ? '+' : '-'}₹${amount.toStringAsFixed(0)}',
-                style: theme.textTheme.bodyMedium?.copyWith(
+                style: TextStyle(
                   color: isIncome ? colors.primary : colors.error,
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              const SizedBox(height: 4),
-              Text(
-                '$percent%',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colors.onSurfaceVariant,
-                ),
-              ),
+              Text('$percent%', style: Theme.of(context).textTheme.bodySmall),
             ],
           ),
         ],

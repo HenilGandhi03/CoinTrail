@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:cointrail/core_utils/constants/sizes.dart';
 
 class SearchButton extends StatelessWidget {
   final VoidCallback onPressed;

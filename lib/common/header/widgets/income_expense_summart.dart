@@ -81,7 +81,7 @@ class IncomeExpenseSummary extends StatelessWidget {
           Align(
             alignment: Alignment.centerRight,
             child: Text(
-              '\$${limit.toStringAsFixed(2)}',
+              '\₹${limit.toStringAsFixed(2)}',
               style: theme.textTheme.bodyMedium,
             ),
           ),
@@ -134,7 +134,7 @@ class _StatItem extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          '${isNegative ? '-' : ''}\$${value.toStringAsFixed(2)}',
+          '${isNegative ? '-' : ''}\₹${value.toStringAsFixed(2)}',
           style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
             color: valueColor,

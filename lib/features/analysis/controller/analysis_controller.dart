@@ -14,6 +14,7 @@ class AnalysisController extends ChangeNotifier {
   final SettingsHiveSource _settingsRepo = SettingsHiveSource();
 
   late StreamSubscription _hiveSubscription;
+  late StreamSubscription _settingsSubscription;
 
   AnalysisRangeType rangeType = AnalysisRangeType.weekly;
   DateTimeRange range = _currentWeek();
@@ -49,6 +50,7 @@ class AnalysisController extends ChangeNotifier {
   Future<void> _init() async {
     await _loadData();
     _listenToHive();
+    _listenToSettingsBox();
   }
 
   Future<void> _loadData() async {
@@ -77,6 +79,15 @@ class AnalysisController extends ChangeNotifier {
     _hiveSubscription = Hive.box<TransactionModel>(
       'transactions',
     ).watch().listen((_) => _loadData());
+  }
+
+  void _listenToSettingsBox() {
+    _settingsSubscription = Hive.box('settingsBox').watch().listen((event) {
+      if (event.key == 'monthlyBudget') {
+        // Reload data when monthly budget changes
+        _loadData();
+      }
+    });
   }
 
   List<TransactionModel> _getTransactionsInRange() {
@@ -242,6 +253,7 @@ class AnalysisController extends ChangeNotifier {
   @override
   void dispose() {
     _hiveSubscription.cancel();
+    _settingsSubscription.cancel();
     super.dispose();
   }
 }
