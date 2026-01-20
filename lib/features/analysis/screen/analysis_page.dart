@@ -185,87 +185,83 @@ import 'package:cointrail/features/analysis/widgets/AnalysisRangeSelector.dart';
 import 'package:cointrail/features/analysis/widgets/analysis_date_nav.dart';
 import 'package:cointrail/features/analysis/widgets/spending_by_category_section.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 enum AnalysisRangeType { weekly, monthly, custom }
 
-class AnalysisPage extends StatefulWidget {
+class AnalysisPage extends StatelessWidget {
   const AnalysisPage({super.key});
 
   @override
-  State<AnalysisPage> createState() => _AnalysisPageState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (context) => AnalysisController(),
+      child: const AnalysisPageView(),
+    );
+  }
 }
 
-class _AnalysisPageState extends State<AnalysisPage> {
-  late final AnalysisController controller;
-
-  @override
-  void initState() {
-    super.initState();
-    controller = AnalysisController();
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
+class AnalysisPageView extends StatelessWidget {
+  const AnalysisPageView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final controller = context.watch<AnalysisController>();
+
     return Scaffold(
-      body: AnimatedBuilder(
-        animation: controller,
-        builder: (_, __) {
-          return CustomScrollView(
-            slivers: [
-              AppHeader(
-                title: 'Analysis',
-                showBack: true,
-                showNotification: true,
-                extendedHeight: true,
+      body: CustomScrollView(
+        slivers: [
+          AppHeader(
+            title: 'Analysis',
+            showBack: true,
+            showNotification: true,
+            extendedHeight: true,
 
-                // 🔵 GREEN AREA
-                pinnedWidgets: [
-                  AnalysisDateNav(
-                    start: controller.range.start,
-                    end: controller.range.end,
-                    onPrev: controller.previous,
-                    onNext: controller.next,
-                  ),
-                ],
-
-                // ⚪ WHITE AREA
-                bottom_analysis: Column(
-                  children: [
-                    const SizedBox(height: 6),
-                    AnalysisRangeSelector(controller: controller),
-                    // const SizedBox(height: 16),
-                    IncomeExpenseSummary(
-                      totalBalance: controller.balance,
-                      totalExpense: controller.totalExpense,
-                      limit: 20000,
-                      progress: controller.totalExpense / 20000,
-                      hintText: 'Good spending control!',
-                    ),
-                  ],
-                ),
-              ),
-
-              // PAGE CONTENT
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                  child: Column(
-                    children: [
-                      SpendingByCategorySection(),
-                      // category list etc
-                    ],
-                  ),
-                ),
+            // 🔵 GREEN AREA
+            pinnedWidgets: [
+              AnalysisDateNav(
+                start: controller.range.start,
+                end: controller.range.end,
+                onPrev: controller.previous,
+                onNext: controller.next,
               ),
             ],
-          );
-        },
+
+            // ⚪ WHITE AREA
+            bottom_analysis: Column(
+              children: [
+                const SizedBox(height: 6),
+                AnalysisRangeSelector(controller: controller),
+                // const SizedBox(height: 16),
+                IncomeExpenseSummary(
+                  totalBalance: controller.balance,
+                  totalExpense: controller.totalExpense,
+                  limit: controller.monthlyLimit,
+                  progress: controller.totalExpense / controller.monthlyLimit,
+                  hintText:
+                      controller.totalExpense < controller.monthlyLimit * 0.5
+                      ? 'Great spending control!'
+                      : controller.totalExpense < controller.monthlyLimit * 0.8
+                      ? 'Good spending control!'
+                      : 'Watch your spending!',
+                ),
+              ],
+            ),
+          ),
+
+          // PAGE CONTENT
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+              child: Column(
+                children: [
+                  SpendingByCategorySection(),
+                  // category list etc
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

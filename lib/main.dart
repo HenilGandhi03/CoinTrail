@@ -1,5 +1,6 @@
 import 'package:cointrail/app/app.dart';
 import 'package:cointrail/data/hive/hive_service.dart';
+import 'package:cointrail/data/services/data_seeder.dart';
 import 'package:cointrail/data/sources/local/category_hive_source.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +17,9 @@ void main() async {
   // Seed default categories and debug
   final categorySource = CategoryHiveSource();
   await categorySource.seedSystemCategories();
+
+  // Seed sample transaction data
+  await DataSeeder.seedSampleData();
 
   // Debug categories after initialization
   HiveService.debugHiveStatus();

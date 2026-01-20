@@ -1,10 +1,9 @@
 import 'package:cointrail/core_utils/constants/sizes.dart';
-import 'package:cointrail/features/home/controller/home_controller.dart';
+import 'package:cointrail/data/models/transaction_model.dart';
+import 'package:cointrail/features/analysis/controller/analysis_controller.dart';
 import 'package:cointrail/features/home/widgets/chart/category_pie_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-enum TransactionType { income, expense }
 
 class SpendingByCategorySection extends StatefulWidget {
   const SpendingByCategorySection({super.key});
@@ -19,8 +18,12 @@ class _SpendingByCategorySectionState extends State<SpendingByCategorySection> {
 
   @override
   Widget build(BuildContext context) {
-    final controller = context.watch<HomeController>();
-    final categories = controller.categories;
+    final analysisController = context.watch<AnalysisController>();
+
+    // Get categories based on selected type
+    final categories = selectedType == TransactionType.income
+        ? analysisController.incomeCategories
+        : analysisController.expenseCategories;
 
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
@@ -69,8 +72,10 @@ class _SpendingByCategorySectionState extends State<SpendingByCategorySection> {
                     label: 'Income',
                     icon: Icons.trending_up,
                     isSelected: selectedType == TransactionType.income,
-                    onTap: () =>
-                        setState(() => selectedType = TransactionType.income),
+                    onTap: () {
+                      setState(() => selectedType = TransactionType.income);
+                      analysisController.updateCategoriesForType(true);
+                    },
                   ),
                 ),
                 Expanded(
@@ -78,8 +83,10 @@ class _SpendingByCategorySectionState extends State<SpendingByCategorySection> {
                     label: 'Expense',
                     icon: Icons.trending_down,
                     isSelected: selectedType == TransactionType.expense,
-                    onTap: () =>
-                        setState(() => selectedType = TransactionType.expense),
+                    onTap: () {
+                      setState(() => selectedType = TransactionType.expense);
+                      analysisController.updateCategoriesForType(false);
+                    },
                   ),
                 ),
               ],
@@ -89,71 +96,106 @@ class _SpendingByCategorySectionState extends State<SpendingByCategorySection> {
           const SizedBox(height: TSizes.lg),
 
           // ───────── PIE + LEGEND ─────────
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Donut Chart
-              SizedBox(
-                width: 160,
-                height: 160,
-                child: CategoryPieChart(
-                  showCenterLabel: true,
-                  centerLabel: selectedType == TransactionType.income
-                      ? 'Income'
-                      : 'Expenses',
-                ),
-              ),
-
-              const SizedBox(width: TSizes.lg),
-
-              // Legend
-              Expanded(
+          if (categories.isEmpty)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(40),
                 child: Column(
-                  children: categories.map<Widget>((c) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 6),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 12,
-                            height: 12,
-                            decoration: BoxDecoration(
-                              color: c.color,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              c.name,
-                              style: theme.textTheme.bodyMedium,
-                            ),
-                          ),
-                        ],
+                  children: [
+                    Icon(
+                      selectedType == TransactionType.income
+                          ? Icons.trending_up
+                          : Icons.trending_down,
+                      size: 48,
+                      color: colors.onSurfaceVariant,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'No ${selectedType == TransactionType.income ? 'income' : 'expense'} data',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        color: colors.onSurfaceVariant,
                       ),
-                    );
-                  }).toList(),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Add some ${selectedType == TransactionType.income ? 'income' : 'expenses'} to see the breakdown',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: colors.onSurfaceVariant,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
+            )
+          else
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Donut Chart
+                SizedBox(
+                  width: 160,
+                  height: 160,
+                  child: CategoryPieChart(
+                    showCenterLabel: true,
+                    centerLabel: selectedType == TransactionType.income
+                        ? 'Income'
+                        : 'Expenses',
+                  ),
+                ),
+
+                const SizedBox(width: TSizes.lg),
+
+                // Legend
+                Expanded(
+                  child: Column(
+                    children: categories.map<Widget>((c) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 6),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 12,
+                              height: 12,
+                              decoration: BoxDecoration(
+                                color: c.color,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                c.name,
+                                style: theme.textTheme.bodyMedium,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ],
+            ),
 
           const SizedBox(height: TSizes.lg),
 
-          Divider(color: colors.outlineVariant),
+          if (categories.isNotEmpty) ...[
+            Divider(color: colors.outlineVariant),
 
-          // ───────── CATEGORY BREAKDOWN ─────────
-          Column(
-            children: categories.map<Widget>((c) {
-              return _CategoryProgressRow(
-                name: c.name,
-                amount: c.amount,
-                percent: c.percentage,
-                color: c.color,
-                isIncome: selectedType == TransactionType.income,
-              );
-            }).toList(),
-          ),
+            // ───────── CATEGORY BREAKDOWN ─────────
+            Column(
+              children: categories.map<Widget>((c) {
+                return _CategoryProgressRow(
+                  name: c.name,
+                  amount: c.amount,
+                  percent: c.percentage,
+                  color: c.color,
+                  isIncome: selectedType == TransactionType.income,
+                );
+              }).toList(),
+            ),
+          ],
         ],
       ),
     );
