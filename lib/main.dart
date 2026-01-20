@@ -19,7 +19,7 @@ void main() async {
   await categorySource.seedSystemCategories();
 
   // Seed sample transaction data
-  await DataSeeder.seedSampleData();
+  // await DataSeeder.seedSampleData();
 
   // Debug categories after initialization
   HiveService.debugHiveStatus();

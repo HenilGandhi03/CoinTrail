@@ -193,6 +193,19 @@ class SearchFilterController extends ChangeNotifier {
 
   void setReportType(bool expense) {
     isExpense = expense;
+
+    // Clear selected category if it doesn't match the new type
+    if (selectedCategory != null) {
+      // If switching to expense but selected category is income, clear it
+      if (expense && selectedCategory!.isIncome) {
+        selectedCategory = null;
+      }
+      // If switching to income but selected category is expense, clear it
+      else if (!expense && !selectedCategory!.isIncome) {
+        selectedCategory = null;
+      }
+    }
+
     _applyFilters();
   }
 

@@ -13,6 +13,13 @@ import 'package:image_picker/image_picker.dart';
 enum ExportType { csv, pdf }
 
 class SettingsController extends ChangeNotifier {
+  // Singleton pattern
+  static SettingsController? _instance;
+  static SettingsController get instance {
+    _instance ??= SettingsController._internal();
+    return _instance!;
+  }
+
   final _userRepo = UserRepository();
   final _settingsHive = SettingsHiveSource();
   final _txRepo = TransactionRepository();
@@ -29,7 +36,8 @@ class SettingsController extends ChangeNotifier {
   ThemeMode themeMode = ThemeMode.system;
   bool isDarkMode = false;
 
-  SettingsController() {
+  // Private constructor
+  SettingsController._internal() {
     _init();
 
     _loadUser();

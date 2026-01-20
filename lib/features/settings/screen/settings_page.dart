@@ -23,12 +23,12 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   void initState() {
     super.initState();
-    settingsController = SettingsController();
+    settingsController = SettingsController.instance;
   }
 
   @override
   void dispose() {
-    settingsController.dispose();
+    // Don't dispose the singleton instance
     super.dispose();
   }
 

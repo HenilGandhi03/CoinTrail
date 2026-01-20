@@ -40,3 +40,16 @@ TODO: Add Month Filter in All Transaction
 TODO: Analysis Page 
 TODO: Add Scan Receipt
 TODO: Push Notification
+
+
+
+
+CategoryHiveSource
+   ↓
+SettingsController (owner)
+   ↓
+CategoryModel (Hive)
+   ↓
+Transactions store categoryId
+   ↓
+Analysis / Charts JOIN by categoryId

@@ -5,14 +5,18 @@ import 'package:provider/provider.dart';
 import 'package:cointrail/features/search/controller/search_filter_controller.dart';
 import 'package:cointrail/features/search/widgets/search_header.dart';
 import 'package:cointrail/features/search/widgets/search_results_section.dart';
+import 'package:cointrail/features/settings/controller/settings_controller.dart';
 
 class SearchPage extends StatelessWidget {
   const SearchPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => SearchFilterController(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => SearchFilterController()),
+        ChangeNotifierProvider.value(value: SettingsController.instance),
+      ],
       child: const _SearchView(),
     );
   }
