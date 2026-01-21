@@ -1,8 +1,8 @@
 import 'package:cointrail/features/settings/widgets/common/settings_card.dart';
+import 'package:cointrail/features/debug/widgets/inbox_debug_helper.dart';
 import 'package:cointrail/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 
 // class DebugSection extends StatelessWidget {
 //   const DebugSection({Key? key}) : super(key: key);
@@ -67,6 +67,16 @@ class DebugSection extends StatelessWidget {
             title: 'Debug Page',
             onTap: () {
               Get.toNamed(TRoutes.hiveDebugLogs);
+            },
+          ),
+
+          const SizedBox(height: 8),
+
+          _SecurityTile(
+            icon: Icons.inbox_rounded,
+            title: 'Inbox Debug',
+            onTap: () {
+              InboxDebugHelper.showDebugDialog(context);
             },
           ),
         ],

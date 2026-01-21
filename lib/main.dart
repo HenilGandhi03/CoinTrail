@@ -27,7 +27,6 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => InboxBadgeController()),
-        // add other global providers here
       ],
       child: const App(),
     ),

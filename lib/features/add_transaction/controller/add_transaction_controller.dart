@@ -21,7 +21,11 @@ class AddTransactionController extends ChangeNotifier {
     this._categoryRepository,
     this.existingTransaction,
   ) : pendingTransaction = null {
-    _initFromExisting();
+    if (existingTransaction != null) {
+      _initFromExisting();
+    } else {
+      _initNew();
+    }
   }
 
   AddTransactionController.fromPending(
@@ -86,6 +90,11 @@ class AddTransactionController extends ChangeNotifier {
     amountController.text = tx.amount.toStringAsFixed(0);
     noteController.text = tx.note ?? '';
     receiptPath = tx.receiptPath;
+    loadCategories();
+  }
+
+  void _initNew() {
+    // Initialize with default values for a new transaction
     loadCategories();
   }
 

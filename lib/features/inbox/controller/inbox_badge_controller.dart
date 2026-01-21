@@ -37,6 +37,19 @@ class InboxBadgeController extends ChangeNotifier {
     }
   }
 
+  // Add this method to help debug and force recalculation
+  void forceRecalculate() {
+    _recalculate();
+  }
+
+  // Add this method to manually reset count if it gets stuck
+  void resetCount() {
+    _count = 0;
+    notifyListeners();
+    // Then force a recalculation
+    _recalculate();
+  }
+
   @override
   void dispose() {
     _pendingBox.listenable().removeListener(_recalculate);
