@@ -4,47 +4,88 @@ import 'package:cointrail/data/models/pending_transaction_model.dart';
 import 'package:cointrail/data/models/transaction_model.dart';
 import 'package:cointrail/data/repositories/category_repository.dart';
 import 'package:cointrail/data/repositories/transaction_repository.dart';
+import 'package:cointrail/data/services/pending_transaction_service.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AddTransactionController extends ChangeNotifier {
+  // AddTransactionController(
+  //   this._repository,
+  //   this._categoryRepository,
+  //   this.existingTransaction,
+  // ) : pendingTransaction = null {
+  //   _init();
+  // }
   AddTransactionController(
     this._repository,
     this._categoryRepository,
     this.existingTransaction,
-  ) {
-    _init();
-  }
-  void _init() {
-    if (existingTransaction != null) {
-      final tx = existingTransaction!;
-
-      type = tx.type;
-      selectedDate = tx.date;
-      paymentMode = tx.paymentMode;
-      paymentModeController.text = _paymentModeToText(tx.paymentMode);
-      receiptPath = tx.receiptPath;
-
-      titleController.text = tx.title;
-      amountController.text = tx.amount.toStringAsFixed(0);
-      noteController.text = tx.note ?? '';
-    }
-
-    loadCategories();
+  ) : pendingTransaction = null {
+    _initFromExisting();
   }
 
   AddTransactionController.fromPending(
     this._repository,
     this._categoryRepository,
     PendingTransaction pending,
-  ) : existingTransaction = null {
+  ) : existingTransaction = null,
+      pendingTransaction = pending {
+    _initFromPending();
+  }
+
+  // void _init() {
+  //   if (existingTransaction != null) {
+  //     final tx = existingTransaction!;
+  //     type = tx.type;
+  //     selectedDate = tx.date;
+  //     paymentMode = tx.paymentMode;
+  //     paymentModeController.text = _paymentModeToText(tx.paymentMode);
+  //     receiptPath = tx.receiptPath;
+
+  //     titleController.text = tx.title;
+  //     amountController.text = tx.amount.toStringAsFixed(0);
+  //     noteController.text = tx.note ?? '';
+  //   }
+
+  //   loadCategories();
+  // }
+
+  // AddTransactionController.fromPending(
+  //   this._repository,
+  //   this._categoryRepository,
+  //   PendingTransaction pending,
+  // ) : existingTransaction = null {
+  //   // type = pending.type;
+  //   // selectedDate = pending.date;
+  //   // paymentMode = pending.paymentMode;
+  //   // paymentModeController.text = _paymentModeToText(pending.paymentMode);
+  //   // titleController.text = pending.title;
+  //   // amountController.text = pending.amount.toStringAsFixed(0);
+  //   _initFromPending();
+  //   // loadCategories();
+  // }
+
+  void _initFromPending() {
+    final pending = pendingTransaction!;
     type = pending.type;
     selectedDate = pending.date;
     paymentMode = pending.paymentMode;
     paymentModeController.text = _paymentModeToText(pending.paymentMode);
     titleController.text = pending.title;
     amountController.text = pending.amount.toStringAsFixed(0);
+    loadCategories();
+  }
 
+  void _initFromExisting() {
+    final tx = existingTransaction!;
+    type = tx.type;
+    selectedDate = tx.date;
+    paymentMode = tx.paymentMode;
+    paymentModeController.text = _paymentModeToText(tx.paymentMode);
+    titleController.text = tx.title;
+    amountController.text = tx.amount.toStringAsFixed(0);
+    noteController.text = tx.note ?? '';
+    receiptPath = tx.receiptPath;
     loadCategories();
   }
 
@@ -55,6 +96,7 @@ class AddTransactionController extends ChangeNotifier {
   final TransactionRepository _repository;
   final CategoryRepository _categoryRepository;
   final TransactionModel? existingTransaction;
+  final PendingTransaction? pendingTransaction;
   bool get isEdit => existingTransaction != null;
 
   TransactionType type = TransactionType.income;
@@ -168,15 +210,17 @@ class AddTransactionController extends ChangeNotifier {
         selectedCategory == null) {
       throw Exception('Missing required fields');
     }
+
     paymentMode = _parsePaymentMode(paymentModeController.text);
 
     final transaction = TransactionModel(
       id: isEdit
           ? existingTransaction!.id
-          : DateTime.now().millisecondsSinceEpoch.toString(),
+          : pendingTransaction?.id ??
+                DateTime.now().millisecondsSinceEpoch.toString(),
       title: titleController.text.trim(),
-      type: type,
       amount: double.parse(amountController.text),
+      type: type,
       category: selectedCategory!.name,
       date: selectedDate,
       paymentMode: paymentMode,
@@ -185,6 +229,13 @@ class AddTransactionController extends ChangeNotifier {
     );
 
     await _repository.add(transaction);
+
+    // 🔥 THIS FIXES YOUR BUG - Remove from pending after saving
+    if (pendingTransaction != null) {
+      await PendingTransactionService.removePending(pendingTransaction!);
+    }
+
+    navigatorKey.currentState?.pop();
   }
 
   @override

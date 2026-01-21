@@ -20,6 +20,22 @@ class TransactionRepository {
     return getAllSorted().take(limit).toList();
   }
 
+  /// Find potential duplicates based on amount and date range
+  List<TransactionModel> findPotentialDuplicates({
+    required double amount,
+    required DateTime date,
+    Duration timeWindow = const Duration(hours: 24),
+  }) {
+    final startTime = date.subtract(timeWindow);
+    final endTime = date.add(timeWindow);
+
+    return _box.values.where((tx) {
+      return tx.amount == amount &&
+          tx.date.isAfter(startTime) &&
+          tx.date.isBefore(endTime);
+    }).toList();
+  }
+
   /// DELETE
   Future<void> delete(String id) async {
     await _box.delete(id);

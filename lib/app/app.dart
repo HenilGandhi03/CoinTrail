@@ -1,9 +1,12 @@
 import 'package:cointrail/app/navigator_key.dart';
 import 'package:cointrail/core_utils/theme/theme.dart';
 import 'package:cointrail/features/authentication/screens/splash/splash_onboarding_screen.dart';
+import 'package:cointrail/features/home/controller/home_controller.dart';
+import 'package:cointrail/features/home/screens/home_page.dart';
 import 'package:cointrail/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -27,6 +30,10 @@ class App extends StatelessWidget {
       getPages: AppRoutes.pages,
 
       home: const SplashOnboardingScreen(),
+      // home: ChangeNotifierProvider(
+      //   create: (_) => HomeController(),
+      //   child: const HomePage(),
+      // ),
     );
   }
 }

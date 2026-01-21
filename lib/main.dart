@@ -1,8 +1,10 @@
 import 'package:cointrail/app/app.dart';
 import 'package:cointrail/data/hive/hive_service.dart';
 import 'package:cointrail/data/sources/local/category_hive_source.dart';
+import 'package:cointrail/features/inbox/controller/inbox_badge_controller.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -21,5 +23,13 @@ void main() async {
   HiveService.debugHiveStatus();
   HiveService.debugCategories();
 
-  runApp(const App());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => InboxBadgeController()),
+        // add other global providers here
+      ],
+      child: const App(),
+    ),
+  );
 }

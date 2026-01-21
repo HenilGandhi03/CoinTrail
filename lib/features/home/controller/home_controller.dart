@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:cointrail/common/widgets/logs.dart';
 import 'package:cointrail/data/models/expense_summary_model.dart';
 import 'package:cointrail/data/models/monthly_summary_model.dart';
+import 'package:cointrail/data/models/pending_transaction_model.dart';
 import 'package:cointrail/data/models/transaction_model.dart';
 import 'package:cointrail/data/models/user_model.dart';
 import 'package:cointrail/data/repositories/home_repository.dart';
@@ -17,6 +18,7 @@ class HomeController extends ChangeNotifier {
   ExpenseSummaryModel? _expenseSummary;
   late final StreamSubscription _settingsSub;
   late final StreamSubscription _userSub;
+  late final StreamSubscription _pendingSub;
   TransactionModel? _lastDeleted;
   TransactionPeriod selectedPeriod = TransactionPeriod.all;
 
@@ -67,6 +69,7 @@ class HomeController extends ChangeNotifier {
     _listenToHive();
     _listenToUserBox();
     _listenToSettingsBox();
+    _listenToPendingBox();
   }
 
   final HomeRepository _repository = HomeRepository();
@@ -93,6 +96,14 @@ class HomeController extends ChangeNotifier {
         logGreen('🔁 Budget changed → reloading summaries');
         _load(); // reload monthly + expense summaries
       }
+    });
+  }
+
+  void _listenToPendingBox() {
+    _pendingSub = Hive.box('pending_transactions').watch().listen((_) {
+      logGreen('🔁 Pending transactions changed → notifying listeners');
+      // Just notify listeners to update any pending transaction counts or badges
+      notifyListeners();
     });
   }
 
@@ -152,12 +163,23 @@ class HomeController extends ChangeNotifier {
     return _repository.getAllTransactions();
   }
 
+  // Get pending transactions count for badges/indicators
+  int get pendingTransactionsCount {
+    try {
+      final pendingBox = Hive.box<PendingTransaction>('pending_transactions');
+      return pendingBox.length;
+    } catch (e) {
+      return 0;
+    }
+  }
+
   @override
   void dispose() {
     _hiveSubscription.cancel();
     _settingsSubscription?.cancel();
     _settingsSub.cancel();
     _userSub.cancel();
+    _pendingSub.cancel();
     super.dispose();
   }
 }

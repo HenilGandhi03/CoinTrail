@@ -21,11 +21,12 @@ class PendingTab extends StatelessWidget {
         return ListView.builder(
           itemCount: box.length,
           itemBuilder: (_, index) {
-            final tx = box.getAt(index)!;
+            final key = box.keyAt(index);
+            final tx = box.get(key)!;
 
             return Dismissible(
               key: ValueKey(tx.id),
-              onDismissed: (_) => box.delete(tx.id),
+              onDismissed: (_) => box.delete(key),
               child: ListTile(
                 title: Text(tx.title),
                 subtitle: Text('₹${tx.amount.toStringAsFixed(0)}'),

@@ -10,6 +10,7 @@ class AppHeader extends StatelessWidget {
     this.subtitle,
     this.bottom,
     this.home_carousel,
+    this.notificationCount = 0,
     this.bottom_analysis,
     this.bottom_alltx,
     this.extendedHeight = false,
@@ -24,6 +25,7 @@ class AppHeader extends StatelessWidget {
 
   // Main title text shown at the top
   final String title;
+  final int notificationCount;
 
   // Optional subtitle below the title
   final String? subtitle;
@@ -87,6 +89,7 @@ class AppHeader extends StatelessWidget {
         statusBar: statusBar,
         pinnedWidgets: pinnedWidgets,
         scrollableWidgets: scrollableWidgets,
+        notificationCount: notificationCount,
       ),
     );
   }
@@ -104,6 +107,7 @@ class _AppHeaderDelegate extends SliverPersistentHeaderDelegate {
     this.bottom_alltx,
     required this.extendedHeight,
     this.centerWidget,
+    required this.notificationCount,
     required this.showBack,
     required this.showNotification,
     this.onBack,
@@ -129,6 +133,7 @@ class _AppHeaderDelegate extends SliverPersistentHeaderDelegate {
   final double statusBar;
   final List<Widget> pinnedWidgets;
   final List<Widget> scrollableWidgets;
+  final int notificationCount;
 
   // Minimum height when fully collapsed (just title + curve visible)
   // This is the smallest the header gets when you scroll down
@@ -281,10 +286,47 @@ class _AppHeaderDelegate extends SliverPersistentHeaderDelegate {
                         customBorder:
                             const CircleBorder(), // Circular tap effect
                         onTap: onNotificationTap,
-                        child: Icon(
-                          Icons.notifications_rounded,
-                          color: colors.primary, // Primary color icon
-                          size: 22,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          clipBehavior: Clip.none,
+                          children: [
+                            Icon(
+                              Icons.notifications_rounded,
+                              color: colors.primary,
+                              size: 22,
+                            ),
+
+                            if (notificationCount > 0)
+                              Positioned(
+                                top: -4,
+                                right: -4,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 2,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.red,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  constraints: const BoxConstraints(
+                                    minWidth: 16,
+                                    minHeight: 16,
+                                  ),
+                                  child: Text(
+                                    notificationCount > 99
+                                        ? '99+'
+                                        : '$notificationCount',
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                          ],
                         ),
                       ),
                     ),
