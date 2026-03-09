@@ -17,7 +17,7 @@ class App extends StatelessWidget {
       navigatorKey: navigatorKey,
 
       /// -- README(Docs[3]) -- Bindings
-      title: "Starter Template",
+      title: "CoinTrail",
       // initialBinding: GeneralBindings(),
       themeMode: ThemeMode.system,
       theme: TAppTheme.light,
