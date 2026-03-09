@@ -10,8 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
-// lib/features/home/pages/all_transactions_page.dart
-
 class AllTransactionsPage extends StatefulWidget {
   const AllTransactionsPage({super.key});
 
@@ -86,14 +84,12 @@ class _AllTransactionsPageState extends State<AllTransactionsPage> {
               onNext: controller.nextMonth,
             ),
           ),
-
           SliverToBoxAdapter(
             child: HorizontalHeader(
               selected: controller.selectedPeriod,
               onChanged: controller.updatePeriod,
             ),
           ),
-
           grouped.isEmpty
               ? const SliverFillRemaining(
                   child: Center(child: Text('No transactions')),
@@ -108,16 +104,55 @@ class _AllTransactionsPageState extends State<AllTransactionsPage> {
                         DayTransactionHeader(date: date, transactions: txs),
                         ...txs.map(
                           (tx) => Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: RecentTransactionTile(
-                              transaction: tx,
-                              showDate: false,
-                              onTap: () {
-                                Get.toNamed(
-                                  TRoutes.editTransaction,
-                                  arguments: tx,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 4,
+                            ),
+                            child: Dismissible(
+                              // Key is required for Dismissible to track the specific item
+                              key: Key(tx.id.toString()),
+                              direction: DismissDirection.endToStart,
+                              // Visual background when swiping
+                              background: Container(
+                                alignment: Alignment.centerRight,
+                                padding: const EdgeInsets.only(right: 20),
+                                decoration: BoxDecoration(
+                                  color: Colors.redAccent,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: const Icon(
+                                  Icons.delete,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              onDismissed: (direction) {
+                                // Call controller to delete
+                                controller.deleteTransaction(tx.id);
+
+                                // Show Snackbar with Undo option
+                                ScaffoldMessenger.of(context).clearSnackBars();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: const Text('Transaction deleted'),
+                                    action: SnackBarAction(
+                                      label: 'Undo',
+                                      onPressed: () {
+                                        controller.restoreLastDeleted();
+                                      },
+                                    ),
+                                  ),
                                 );
                               },
+                              child: RecentTransactionTile(
+                                transaction: tx,
+                                showDate: false,
+                                onTap: () {
+                                  Get.toNamed(
+                                    TRoutes.editTransaction,
+                                    arguments: tx,
+                                  );
+                                },
+                              ),
                             ),
                           ),
                         ),

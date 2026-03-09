@@ -20,32 +20,49 @@ class BalanceCardIncome extends StatelessWidget {
       gradient: cardGradient,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
         children: [
           const _IncomeHeader(),
 
-          Text(
-            '\₹${income.totalIncome.toStringAsFixed(0)}',
-            style: Theme.of(context).textTheme.displaySmall?.copyWith(
-              color: colors.onPrimary,
-              fontWeight: FontWeight.bold,
+          const SizedBox(height: TSizes.xs),
+
+          Flexible(
+            child: Text(
+              '\₹${income.totalIncome.toStringAsFixed(0)}',
+              style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                color: colors.onPrimary,
+                fontWeight: FontWeight.bold,
+              ),
+              overflow: TextOverflow.ellipsis,
             ),
           ),
 
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Source: ${income.source}',
-                style: TextStyle(color: colors.onPrimary.withOpacity(0.8)),
-              ),
-              Text(
-                'Next: ${income.nextDate}',
-                style: TextStyle(color: colors.onPrimary.withOpacity(0.8)),
-              ),
-            ],
+          const SizedBox(height: TSizes.xs),
+
+          Flexible(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Flexible(
+                  child: Text(
+                    'Source: ${income.source}',
+                    style: TextStyle(color: colors.onPrimary.withOpacity(0.8)),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                const SizedBox(width: TSizes.xs),
+                Flexible(
+                  child: Text(
+                    'Next: ${income.nextDate}',
+                    style: TextStyle(color: colors.onPrimary.withOpacity(0.8)),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
           ),
 
-          const SizedBox(height: TSizes.sm),
+          const SizedBox(height: TSizes.xs),
 
           Container(
             padding: const EdgeInsets.all(8),
@@ -56,10 +73,13 @@ class BalanceCardIncome extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Icon(Icons.trending_up, color: Colors.white),
-                Text(
-                  '+${income.growthPercent.toStringAsFixed(1)}% this month',
-                  style: const TextStyle(color: Colors.white),
+                const Icon(Icons.trending_up, color: Colors.white, size: 20),
+                Flexible(
+                  child: Text(
+                    '+${income.growthPercent.toStringAsFixed(1)}% this month',
+                    style: const TextStyle(color: Colors.white, fontSize: 12),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ],
             ),

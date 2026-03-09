@@ -154,7 +154,7 @@ class _AppHeaderDelegate extends SliverPersistentHeaderDelegate {
 
     // Add height if home_carousel exists
     if (home_carousel != null) height += 140;
-    if (bottom_analysis != null) height += 40;
+    if (bottom_analysis != null) height += 70;
     if (bottom_alltx != null) height += 0;
 
     // Add height for each pinned widget
@@ -369,9 +369,9 @@ class _AppHeaderDelegate extends SliverPersistentHeaderDelegate {
                   children: [
                     // Subtitle section (if exists)
                     if (subtitle != null) ...[
-                      const SizedBox(height: TSizes.sm),
+                      const SizedBox(height: TSizes.md),
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(3.0, 0, 0, 0),
+                        padding: const EdgeInsets.fromLTRB(10.0, 0, 0, 0),
                         child: Text(
                           subtitle!,
                           textAlign: TextAlign.left,
@@ -398,7 +398,7 @@ class _AppHeaderDelegate extends SliverPersistentHeaderDelegate {
 
                     // Bottom analysis widget (if exists)
                     if (bottom_analysis != null) ...[
-                      const SizedBox(height: TSizes.xxxl),
+                      const SizedBox(height: TSizes.xxxxl),
                       bottom_analysis!,
                     ],
                     // Bottom alltx widget (if exists)

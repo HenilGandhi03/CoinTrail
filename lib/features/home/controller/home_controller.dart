@@ -18,7 +18,7 @@ class HomeController extends ChangeNotifier {
   ExpenseSummaryModel? _expenseSummary;
   late final StreamSubscription _settingsSub;
   late final StreamSubscription _userSub;
-  late final StreamSubscription _pendingSub;
+  late final StreamSubscription? _pendingSub;
   TransactionModel? _lastDeleted;
   TransactionPeriod selectedPeriod = TransactionPeriod.all;
 
@@ -100,11 +100,27 @@ class HomeController extends ChangeNotifier {
   }
 
   void _listenToPendingBox() {
-    _pendingSub = Hive.box('pending_transactions').watch().listen((_) {
-      logGreen('🔁 Pending transactions changed → notifying listeners');
-      // Just notify listeners to update any pending transaction counts or badges
-      notifyListeners();
-    });
+    try {
+      // Check if box is already open
+      if (Hive.isBoxOpen('pending_transactions')) {
+        final subscription = Hive.box('pending_transactions').watch().listen((
+          _,
+        ) {
+          logGreen('🔁 Pending transactions changed → notifying listeners');
+          // Just notify listeners to update any pending transaction counts or badges
+          notifyListeners();
+        });
+        _pendingSub = subscription;
+      } else {
+        logGreen(
+          '⚠️ Pending transactions box not open, skipping listener setup',
+        );
+        _pendingSub = null;
+      }
+    } catch (e) {
+      logGreen('❌ Error setting up pending box listener: $e');
+      _pendingSub = null;
+    }
   }
 
   // Manual method to refresh user name (for testing)
@@ -179,7 +195,7 @@ class HomeController extends ChangeNotifier {
     _settingsSubscription?.cancel();
     _settingsSub.cancel();
     _userSub.cancel();
-    _pendingSub.cancel();
+    _pendingSub?.cancel();
     super.dispose();
   }
 }

@@ -20,6 +20,7 @@ class MonthSelector extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8),
       height: 52,
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,

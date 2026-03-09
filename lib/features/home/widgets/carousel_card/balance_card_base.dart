@@ -15,7 +15,8 @@ class BalanceCardBase extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: MediaQuery.of(context).size.width * 0.85,
-      padding: const EdgeInsets.all(TSizes.lg),
+      height: 160, // Fixed height to prevent overflow
+      padding: const EdgeInsets.all(TSizes.sm),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(TSizes.cardRadiusLg),
         gradient: gradient,

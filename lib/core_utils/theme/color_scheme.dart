@@ -60,18 +60,18 @@ class TColorScheme {
    * ============================================================ */
 
   // Brand
-  static const Color darkPrimary = Color(0xFF2F66C9);
-  static const Color darkSecondary = Color(0xFF5C677D);
+  static const Color darkPrimary = Color(0xFF004F2D);
+  static const Color darkSecondary = Color(0xFFFBFFFE);
 
   // Canvas & Surfaces
-  static const Color darkBackground = Color(0xFF001233);
-  static const Color darkSurface = Color(0xFF001233);
-  static const Color darkSurfaceContainer = Color(0xFF023E7D);
+  static const Color darkBackground = Color(0xFFFBFFFE);
+  static const Color darkSurface = Color(0xFFFBFFFE);
+  static const Color darkSurfaceContainer = Color(0xFF5DA271);
 
   // Text
-  static const Color darkOnBackground = Colors.white;
-  static const Color darkOnSurface = Colors.white;
-  static const Color darkTextSecondary = Color(0xFF979DAC);
+  static const Color darkOnBackground = Color(0xFF0F172A);
+  static const Color darkOnSurface = Color(0xFF0F172A);
+  static const Color darkTextSecondary = Color(0xFFFBFFFE);
 
   // Semantic
   static const Color darkDivider = Color(0xFF33415C);

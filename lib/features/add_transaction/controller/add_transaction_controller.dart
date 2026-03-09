@@ -77,7 +77,9 @@ class AddTransactionController extends ChangeNotifier {
     paymentModeController.text = _paymentModeToText(pending.paymentMode);
     titleController.text = pending.title;
     amountController.text = pending.amount.toStringAsFixed(0);
-    loadCategories();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      loadCategories();
+    });
   }
 
   void _initFromExisting() {
@@ -90,12 +92,16 @@ class AddTransactionController extends ChangeNotifier {
     amountController.text = tx.amount.toStringAsFixed(0);
     noteController.text = tx.note ?? '';
     receiptPath = tx.receiptPath;
-    loadCategories();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      loadCategories();
+    });
   }
 
   void _initNew() {
     // Initialize with default values for a new transaction
-    loadCategories();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      loadCategories();
+    });
   }
 
   final TextEditingController paymentModeController = TextEditingController(
@@ -214,10 +220,28 @@ class AddTransactionController extends ChangeNotifier {
 
   // ───────── SAVE ─────────
   Future<void> saveTransaction() async {
-    if (titleController.text.isEmpty ||
-        amountController.text.isEmpty ||
-        selectedCategory == null) {
-      throw Exception('Missing required fields');
+    // Validate required fields
+    if (titleController.text.trim().isEmpty) {
+      throw Exception('Please enter a title');
+    }
+
+    if (amountController.text.trim().isEmpty) {
+      throw Exception('Please enter an amount');
+    }
+
+    if (selectedCategory == null) {
+      throw Exception('Please select a category');
+    }
+
+    // Validate amount is a valid number
+    double amount;
+    try {
+      amount = double.parse(amountController.text.trim());
+      if (amount <= 0) {
+        throw Exception('Amount must be greater than 0');
+      }
+    } catch (e) {
+      throw Exception('Please enter a valid amount');
     }
 
     paymentMode = _parsePaymentMode(paymentModeController.text);
@@ -228,12 +252,14 @@ class AddTransactionController extends ChangeNotifier {
           : pendingTransaction?.id ??
                 DateTime.now().millisecondsSinceEpoch.toString(),
       title: titleController.text.trim(),
-      amount: double.parse(amountController.text),
+      amount: amount,
       type: type,
       category: selectedCategory!.name,
       date: selectedDate,
       paymentMode: paymentMode,
-      note: noteController.text.isEmpty ? null : noteController.text,
+      note: noteController.text.trim().isEmpty
+          ? null
+          : noteController.text.trim(),
       receiptPath: receiptPath,
     );
 
@@ -244,7 +270,7 @@ class AddTransactionController extends ChangeNotifier {
       await PendingTransactionService.removePending(pendingTransaction!);
     }
 
-    navigatorKey.currentState?.pop();
+    // Navigation is now handled in the UI layer, not here
   }
 
   @override

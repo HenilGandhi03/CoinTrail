@@ -22,55 +22,79 @@ class BalanceCardMonthly extends StatelessWidget {
       gradient: cardGradient,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
         children: [
           _MonthlyHeader(),
 
-          Text(
-            '\₹${summary.totalSpent.toStringAsFixed(0)}',
-            style: Theme.of(context).textTheme.displaySmall?.copyWith(
-              color: colors.onPrimary,
-              fontWeight: FontWeight.bold,
+          const SizedBox(height: TSizes.xs),
+
+          Flexible(
+            child: Text(
+              '\₹${summary.totalSpent.toStringAsFixed(0)}',
+              style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                color: colors.onPrimary,
+                fontWeight: FontWeight.bold,
+              ),
+              overflow: TextOverflow.ellipsis,
             ),
           ),
 
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Budget: \₹${summary.budget.toStringAsFixed(0)}',
-                style: TextStyle(color: colors.onPrimary.withOpacity(0.8)),
-              ),
-              Text(
-                'Remaining: \₹${summary.remaining.toStringAsFixed(0)}',
-                style: TextStyle(color: colors.onPrimary.withOpacity(0.8)),
-              ),
-            ],
+          const SizedBox(height: TSizes.xs),
+
+          Flexible(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Flexible(
+                  child: Text(
+                    'Budget: \₹${summary.budget.toStringAsFixed(0)}',
+                    style: TextStyle(color: colors.onPrimary.withOpacity(0.8)),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                const SizedBox(width: TSizes.xs),
+                Flexible(
+                  child: Text(
+                    'Remaining: \₹${summary.remaining.toStringAsFixed(0)}',
+                    style: TextStyle(color: colors.onPrimary.withOpacity(0.8)),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
           ),
 
-          const SizedBox(height: TSizes.sm),
+          const SizedBox(height: TSizes.xs),
 
           ClipRRect(
             borderRadius: BorderRadius.circular(6),
             child: LinearProgressIndicator(
               value: summary.progress.clamp(0.0, 1.0),
-              minHeight: 8,
+              minHeight: 6,
               backgroundColor: colors.onPrimary.withOpacity(0.2),
               color: colors.onPrimary,
             ),
           ),
 
-          const SizedBox(height: TSizes.sm),
+          const SizedBox(height: TSizes.xs),
 
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                '${(summary.progress * 100).toStringAsFixed(1)}% used',
-                style: TextStyle(color: colors.onPrimary),
+              Flexible(
+                child: Text(
+                  '${(summary.progress * 100).toStringAsFixed(1)}% used',
+                  style: TextStyle(color: colors.onPrimary),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-              Text(
-                '${summary.daysLeft} days left',
-                style: TextStyle(color: colors.onPrimary),
+              const SizedBox(width: TSizes.xs),
+              Flexible(
+                child: Text(
+                  '${summary.daysLeft} days left',
+                  style: TextStyle(color: colors.onPrimary),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ],
           ),

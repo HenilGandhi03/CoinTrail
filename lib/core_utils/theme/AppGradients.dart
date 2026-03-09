@@ -30,7 +30,7 @@ const lightCardGradient = AppGradients(
 // Dark card gradient
 const darkCardGradient = AppGradients(
   card: LinearGradient(
-    colors: [Color(0xFF0466C8), Color(0xFF5C677D)],
+    colors: [Color(0xFF183A26), Color(0xFF004F2D)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   ),

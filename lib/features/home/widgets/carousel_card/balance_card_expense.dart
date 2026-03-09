@@ -21,48 +21,67 @@ class BalanceCardExpense extends StatelessWidget {
       gradient: cardGradient,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
         children: [
           const _ExpenseHeader(),
 
-          Text(
-            '\₹${expense.totalExpense.toStringAsFixed(0)}',
-            style: Theme.of(context).textTheme.displaySmall?.copyWith(
-              color: colors.onPrimary,
-              fontWeight: FontWeight.bold,
+          const SizedBox(height: TSizes.xs),
+
+          Flexible(
+            child: Text(
+              '\₹${expense.totalExpense.toStringAsFixed(0)}',
+              style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                color: colors.onPrimary,
+                fontWeight: FontWeight.bold,
+              ),
+              overflow: TextOverflow.ellipsis,
             ),
           ),
 
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Categories: ${expense.categories}',
-                style: TextStyle(color: colors.onPrimary.withOpacity(0.8)),
-              ),
-              Text(
-                'Today: \₹${expense.today.toStringAsFixed(0)}',
-                style: TextStyle(color: colors.onPrimary.withOpacity(0.8)),
-              ),
-            ],
-          ),
+          const SizedBox(height: TSizes.xs),
 
-          const SizedBox(height: TSizes.sm),
-
-          ClipRRect(
-            borderRadius: BorderRadius.circular(6),
-            child: LinearProgressIndicator(
-              value: expense.progress,
-              minHeight: 8,
-              backgroundColor: colors.onPrimary.withOpacity(0.2),
-              color: colors.onPrimary,
+          Flexible(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Flexible(
+                  child: Text(
+                    'Categories: ${expense.categories}',
+                    style: TextStyle(color: colors.onPrimary.withOpacity(0.8)),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                const SizedBox(width: TSizes.xs),
+                Flexible(
+                  child: Text(
+                    'Today: \₹${expense.today.toStringAsFixed(0)}',
+                    style: TextStyle(color: colors.onPrimary.withOpacity(0.8)),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
             ),
           ),
 
-          const SizedBox(height: TSizes.sm),
+          const SizedBox(height: TSizes.xs),
+
+          if (expense.categories > 0) ...[
+            ClipRRect(
+              borderRadius: BorderRadius.circular(6),
+              child: LinearProgressIndicator(
+                value: expense.progress.clamp(0.0, 1.0),
+                minHeight: 6,
+                backgroundColor: colors.onPrimary.withOpacity(0.2),
+                color: colors.onPrimary,
+              ),
+            ),
+            const SizedBox(height: TSizes.xs),
+          ],
 
           Text(
             '${(expense.progress * 100).toStringAsFixed(1)}% of budget used',
             style: TextStyle(color: colors.onPrimary),
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),

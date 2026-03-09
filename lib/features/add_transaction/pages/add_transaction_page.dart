@@ -132,15 +132,23 @@ class AddTransactionView extends StatelessWidget {
                         onPressed: () async {
                           try {
                             await controller.saveTransaction();
-                            Navigator.pop(context, true);
+                            if (context.mounted) {
+                              Navigator.pop(context, true);
+                            }
                           } catch (e) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'Please fill all required fields',
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    e.toString().replaceFirst(
+                                      'Exception: ',
+                                      '',
+                                    ),
+                                  ),
+                                  backgroundColor: Colors.red,
                                 ),
-                              ),
-                            );
+                              );
+                            }
                           }
                         },
 

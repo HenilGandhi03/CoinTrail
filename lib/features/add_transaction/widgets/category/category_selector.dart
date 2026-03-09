@@ -21,12 +21,25 @@ class CategorySelector extends StatelessWidget {
     final controller = context.watch<AddTransactionController>();
     final categories = controller.categories;
 
-    // Debug logging
-    print(
-      'CategorySelector: isIncome=$isIncome, categories count=${categories.length}',
-    );
-    for (var category in categories) {
-      print('  - ${category.name} (${category.id})');
+    if (categories.isEmpty) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Category',
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 16),
+          const Center(
+            child: Text(
+              'Loading categories...',
+              style: TextStyle(color: Colors.grey),
+            ),
+          ),
+        ],
+      );
     }
 
     return Column(
